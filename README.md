@@ -63,7 +63,6 @@
             margin-bottom: 30px;
         }
 
-        /* 💿 ستایلی دیسکەکە لەگەڵ لۆگۆ نوێیەکەت */
         .disc {
             width: 100%;
             height: 100%;
@@ -82,7 +81,7 @@
         .disc img {
             width: 100%;
             height: 100%;
-            object-fit: cover; /* بۆ ئەوەی وێنەکە تەواوی بازنەکە پڕ بکاتەوە و شێوەی تێکنەچێت */
+            object-fit: cover;
             border-radius: 50%;
         }
 
@@ -195,7 +194,7 @@
     <div class="main-content" id="playerContainer">
         <div class="disc-container">
             <div class="disc">
-                <img src="https://github.com/serverblbas-svg/LOGO/blob/main/photo_2023-08-30_20-43-07.jpg?raw=true" id="radioLogo" alt="Radio Logo">
+                <img src="https://raw.githubusercontent.com/serverblbas-svg/LOGO/main/photo_2023-08-30_20-43-07.jpg" id="radioLogo" alt="Radio Logo">
             </div>
         </div>
 
