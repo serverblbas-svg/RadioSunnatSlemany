@@ -1,1 +1,292 @@
-# RADIO-SPI-HAWLER
+<!DOCTYPE html>
+<html lang="ku" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>ڕادیۆی سپی هەولێر - ڕاستەوخۆ</title>
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+    <style>
+        :root {
+            --primary: #f0b90b;
+            --bg-gradient: linear-gradient(135deg, #0f111a 0%, #191b28 100%);
+            --card-bg: rgba(255, 255, 255, 0.04);
+            --border: rgba(255, 255, 255, 0.08);
+            --text: #ffffff;
+            --text-muted: #a0a5b5;
+        }
+
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background: var(--bg-gradient);
+            color: var(--text);
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+            overflow: hidden;
+        }
+
+        .header {
+            width: 100%;
+            text-align: center;
+            padding: 10px 0;
+        }
+        .header h1 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            letter-spacing: 1px;
+            color: var(--text-muted);
+        }
+
+        .main-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            flex: 1;
+            width: 100%;
+        }
+
+        .disc-container {
+            position: relative;
+            width: 220px;
+            height: 220px;
+            margin-bottom: 30px;
+        }
+
+        /* 💿 ستایلی دیسکەکە لەگەڵ لۆگۆ نوێیەکەت */
+        .disc {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: #111;
+            border: 6px solid #222;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.5), 0 0 0 10px rgba(240, 185, 11, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            animation: rotateDisc 12s linear infinite;
+            animation-play-state: paused;
+        }
+
+        .disc img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover; /* بۆ ئەوەی وێنەکە تەواوی بازنەکە پڕ بکاتەوە و شێوەی تێکنەچێت */
+            border-radius: 50%;
+        }
+
+        @keyframes rotateDisc {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .track-info {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+        .track-title {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--text);
+            margin-bottom: 6px;
+        }
+        .track-subtitle {
+            font-size: 0.9rem;
+            color: var(--primary);
+            font-weight: 500;
+        }
+
+        .wave-container {
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            gap: 4px;
+            height: 40px;
+            margin-bottom: 30px;
+            opacity: 0.5;
+        }
+        .wave-bar {
+            width: 4px;
+            height: 5px;
+            background: var(--primary);
+            border-radius: 2px;
+            transition: height 0.2s;
+        }
+        .playing .wave-bar {
+            animation: bounce 0.8s ease-in-out infinite alternate;
+        }
+        .playing .disc {
+            animation-play-state: running;
+        }
+        
+        .playing .wave-bar:nth-child(1) { animation-delay: 0.1s; }
+        .playing .wave-bar:nth-child(2) { animation-delay: 0.4s; }
+        .playing .wave-bar:nth-child(3) { animation-delay: 0.2s; }
+        .playing .wave-bar:nth-child(4) { animation-delay: 0.6s; }
+        .playing .wave-bar:nth-child(5) { animation-delay: 0.3s; }
+
+        @keyframes bounce {
+            0% { height: 5px; }
+            100% { height: 40px; }
+        }
+
+        .controls {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 4px;
+        }
+
+        .play-btn {
+            width: 76px;
+            height: 76px;
+            border-radius: 50%;
+            background: var(--primary);
+            border: none;
+            color: #000;
+            font-size: 1.8rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 8px 25px rgba(240, 185, 11, 0.4);
+            transition: transform 0.2s, background-color 0.2s;
+        }
+        .play-btn:active {
+            transform: scale(0.92);
+            background: #d4a30a;
+        }
+
+        .footer-info {
+            width: 100%;
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            padding: 12px;
+            border-radius: 16px;
+            text-align: center;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+        
+        #statusText {
+            color: var(--primary);
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <h1>RADIO SPI HAWLER</h1>
+    </div>
+
+    <div class="main-content" id="playerContainer">
+        <div class="disc-container">
+            <div class="disc">
+                <img src="https://github.com/serverblbas-svg/LOGO/blob/main/photo_2023-08-30_20-43-07.jpg?raw=true" id="radioLogo" alt="Radio Logo">
+            </div>
+        </div>
+
+        <div class="track-info">
+            <div class="track-title">ڕادیۆی سپی هەولێر</div>
+            <div class="track-subtitle">پەخشی ڕاستەوخۆ 📻</div>
+        </div>
+
+        <div class="wave-container">
+            <div class="wave-bar"></div>
+            <div class="wave-bar"></div>
+            <div class="wave-bar"></div>
+            <div class="wave-bar"></div>
+            <div class="wave-bar"></div>
+        </div>
+
+        <div class="controls">
+            <button class="play-btn" id="playBtn" onclick="togglePlay()">▶</button>
+        </div>
+    </div>
+
+    <audio id="audioStream" style="display:none;"></audio>
+
+    <div class="footer-info">
+        دۆخی پەخش: <span id="statusText">ئامادەیە بۆ لێدان</span>
+    </div>
+
+<script>
+    const RAW_URL = "http://admin:radiospihawler@uk17freenew.listen2myradio.com:23549/live/radiospihawler2025/m3u8";
+    const STREAM_URL = "https://cors-anywhere.herokuapp.com/" + RAW_URL;
+    
+    const audio = document.getElementById('audioStream');
+    const playBtn = document.getElementById('playBtn');
+    const container = document.getElementById('playerContainer');
+    const statusText = document.getElementById('statusText');
+    
+    let hls = new Hls();
+    let isPlaying = false;
+    let isInitialized = false;
+
+    function initPlayer() {
+        if (Hls.isSupported()) {
+            hls.loadSource(STREAM_URL);
+            hls.attachMedia(audio);
+            hls.on(Hls.Events.MANIFEST_PARSED, () => {
+                console.log("HLS Loaded via HTTPS Proxy");
+            });
+            hls.on(Hls.Events.ERROR, function (event, data) {
+                if (data.fatal) {
+                    console.log("Proxy error, trying direct link...");
+                    hls.loadSource(RAW_URL);
+                }
+            });
+        } else if (audio.canPlayType('application/vnd.apple.mpegurl')) {
+            audio.src = RAW_URL;
+        }
+        isInitialized = true;
+    }
+
+    function togglePlay() {
+        if (!isInitialized) {
+            initPlayer();
+        }
+
+        if (!isPlaying) {
+            statusText.innerText = "پەیوەندی دەبەسترێت...";
+            audio.play().then(() => {
+                isPlaying = true;
+                playBtn.innerText = "⏸";
+                container.classList.add('playing');
+                statusText.innerText = "ئێستا پەخش دەکرێت ڕاستەوخۆ";
+            }).catch(err => {
+                console.log("Playback failed, trying direct connection...", err);
+                audio.src = RAW_URL;
+                audio.play().then(() => {
+                    isPlaying = true;
+                    playBtn.innerText = "⏸";
+                    container.classList.add('playing');
+                    statusText.innerText = "ئێستا پەخش دەکرێت ڕاستەوخۆ";
+                }).catch(e => {
+                    statusText.innerText = "تکایە لە دۆخی وێبگەرەکەت ڕێگە بە Insecure Content بدە";
+                });
+            });
+        } else {
+            audio.pause();
+            isPlaying = false;
+            playBtn.innerText = "▶";
+            container.classList.remove('playing');
+            statusText.innerText = "ڕاگیراوە";
+        }
+    }
+</script>
+</body>
+</html>
