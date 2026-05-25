@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>ڕادیۆی سپی هەولێر - ڕاستەوخۆ</title>
-    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
     <style>
         :root {
             --primary: #f0b90b;
@@ -63,7 +62,6 @@
             margin-bottom: 30px;
         }
 
-        /* 💿 ستایلی دیسکەکە لەگەڵ لۆگۆ نوێیەکەت */
         .disc {
             width: 100%;
             height: 100%;
@@ -82,7 +80,7 @@
         .disc img {
             width: 100%;
             height: 100%;
-            object-fit: cover; /* بۆ ئەوەی وێنەکە تەواوی بازنەکە پڕ بکاتەوە و شێوەی تێکنەچێت */
+            object-fit: cover;
             border-radius: 50%;
         }
 
@@ -195,7 +193,7 @@
     <div class="main-content" id="playerContainer">
         <div class="disc-container">
             <div class="disc">
-                <img src="https://github.com/serverblbas-svg/LOGO/blob/main/photo_2023-08-30_20-43-07.jpg?raw=true" id="radioLogo" alt="Radio Logo">
+                <img src="https://raw.githubusercontent.com/serverblbas-svg/LOGO/main/photo_2023-08-30_20-43-07.jpg" id="radioLogo" alt="Radio Logo">
             </div>
         </div>
 
@@ -217,76 +215,75 @@
         </div>
     </div>
 
-    <audio id="audioStream" style="display:none;"></audio>
+    <!-- تێگی ئەدۆیو بەبێ پیشاندانی کۆنترۆڵەکان -->
+    <audio id="audioStream" preload="none" crossorigin="anonymous"></audio>
 
     <div class="footer-info">
         دۆخی پەخش: <span id="statusText">ئامادەیە بۆ لێدان</span>
     </div>
 
 <script>
-    const RAW_URL = "http://admin:radiospihawler@uk17freenew.listen2myradio.com:23549/live/radiospihawler2025/m3u8";
-    const STREAM_URL = "https://cors-anywhere.herokuapp.com/" + RAW_URL;
+    // بەستەرە جیاوازەکانی پەخش بۆ پاڵپشتی (Fallback)
+    const STREAMS = [
+        "http://uk17freenew.listen2myradio.com:23549/live/radiospihawler2025/m3u8",
+        "http://uk17freenew.listen2myradio.com:23549/;stream", // بەستەری ڕاستەوخۆی شۆتکاست
+        "http://admin:radiospihawler@uk17freenew.listen2myradio.com:23549/stream"
+    ];
     
     const audio = document.getElementById('audioStream');
     const playBtn = document.getElementById('playBtn');
     const container = document.getElementById('playerContainer');
     const statusText = document.getElementById('statusText');
     
-    let hls = new Hls();
     let isPlaying = false;
-    let isInitialized = false;
+    let currentStreamIndex = 0;
 
-    function initPlayer() {
-        if (Hls.isSupported()) {
-            hls.loadSource(STREAM_URL);
-            hls.attachMedia(audio);
-            hls.on(Hls.Events.MANIFEST_PARSED, () => {
-                console.log("HLS Loaded via HTTPS Proxy");
-            });
-            hls.on(Hls.Events.ERROR, function (event, data) {
-                if (data.fatal) {
-                    console.log("Proxy error, trying direct link...");
-                    hls.loadSource(RAW_URL);
-                }
-            });
-        } else if (audio.canPlayType('application/vnd.apple.mpegurl')) {
-            audio.src = RAW_URL;
+    function loadStream(index) {
+        if (index >= STREAMS.length) {
+            statusText.innerText = "تکایە لە دۆخی وێبگەرەکەت ڕێگە بە Insecure Content بدە";
+            container.classList.remove('playing');
+            playBtn.innerText = "▶";
+            isPlaying = false;
+            return;
         }
-        isInitialized = true;
+        
+        console.log("هەوڵدان بۆ بەستنەوە بە: " + STREAMS[index]);
+        audio.src = STREAMS[index];
+        audio.load();
+        
+        audio.play().then(() => {
+            isPlaying = true;
+            playBtn.innerText = "⏸";
+            container.classList.add('playing');
+            statusText.innerText = "ئێستا پەخش دەکرێت ڕاستەوخۆ";
+        }).catch(err => {
+            console.log("سەرکەوتوو نەبوو، بەستەری دواتر تاقی دەکرێتەوە...");
+            loadStream(index + 1);
+        });
     }
 
     function togglePlay() {
-        if (!isInitialized) {
-            initPlayer();
-        }
-
         if (!isPlaying) {
             statusText.innerText = "پەیوەندی دەبەسترێت...";
-            audio.play().then(() => {
-                isPlaying = true;
-                playBtn.innerText = "⏸";
-                container.classList.add('playing');
-                statusText.innerText = "ئێستا پەخش دەکرێت ڕاستەوخۆ";
-            }).catch(err => {
-                console.log("Playback failed, trying direct connection...", err);
-                audio.src = RAW_URL;
-                audio.play().then(() => {
-                    isPlaying = true;
-                    playBtn.innerText = "⏸";
-                    container.classList.add('playing');
-                    statusText.innerText = "ئێستا پەخش دەکرێت ڕاستەوخۆ";
-                }).catch(e => {
-                    statusText.innerText = "تکایە لە دۆخی وێبگەرەکەت ڕێگە بە Insecure Content بدە";
-                });
-            });
+            currentStreamIndex = 0; // دەستپێکردنەوە لە بەستەری یەکەم
+            loadStream(currentStreamIndex);
         } else {
             audio.pause();
+            audio.src = ""; // بۆ وەستاندنی دابەزاندنی داتاکە لە باکگراوند
             isPlaying = false;
             playBtn.innerText = "▶";
             container.classList.remove('playing');
             statusText.innerText = "ڕاگیراوە";
         }
     }
+
+    // ئەگەر لە کاتی پەخش کێشەیەک دروست بوو، خۆی دەچێتە سەر بەستەری دواتر
+    audio.addEventListener('error', function() {
+        if (isPlaying) {
+            currentStreamIndex++;
+            loadStream(currentStreamIndex);
+        }
+    });
 </script>
 </body>
 </html>
