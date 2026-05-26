@@ -511,8 +511,10 @@
 (function () {
     'use strict';
 
-    // 🛠️ لێرەدا بەستەرەکەم گۆڕی بۆ HTTPS بەبێ بەکارهێنانی هیچ پڕۆکسییەک بۆ ئەوەی ڕاستەوخۆ لۆد بێت
-    const STREAM_URL = 'https://uk17freenew.listen2myradio.com:23549/live/radiospihawler2025/m3u8';
+    const RAW_URL = 'http://admin:radiospihawler@uk17freenew.listen2myradio.com:23549/live/radiospihawler2025/m3u8';
+    
+    // 🛠️ بەکارهێنانی پڕۆکسی فەرمی و جێگیر کە ڕێگا بە تێپەڕبوونی HTTP بۆ ناو HTTPS دەدات بێ کێشە
+    const STREAM_URL = 'https://cors-anywhere.herokuapp.com/' + RAW_URL;
 
     let hls         = null;
     let isPlaying   = false;
@@ -580,7 +582,6 @@
             });
 
         } else {
-            // بۆ Safari و ئامێرەکانی iOS کە نەیتیڤ HLS دەخوێننەوە
             audioEl.src = STREAM_URL;
             audioEl.load();
             audioEl.play()
