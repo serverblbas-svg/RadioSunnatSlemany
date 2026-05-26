@@ -158,7 +158,7 @@
             border-radius: 50%;
             overflow: hidden;
             position: relative;
-            background: #ffffff; /* 🛠️ دڵنیابوونەوە لە ڕەنگی سپی تەواو بۆ پاشبنەمای لۆگۆکە */
+            background: #ffffff;
             box-shadow:
                 0 0 0 5px rgba(240,185,11,0.08),
                 0 0 0 11px rgba(240,185,11,0.04),
@@ -168,8 +168,8 @@
         }
         .disc img {
             width: 100%; height: 100%;
-            object-fit: contain; /* 🛠️ گۆڕینی بۆ contain بۆ ئەوەی لۆگۆکە نەبڕێت و ڕێک بکەوێت */
-            padding: 12px; /* 🛠️ دروستکردنی بۆشاییەکی یەکسان لە چوار دەور بۆ هێنانە سەنتەری ڕەها */
+            object-fit: contain;
+            padding: 12px;
             border-radius: 50%;
             display: block;
         }
@@ -535,9 +535,10 @@
 
     const AUTH_URL = 'http://admin:radiospihawler@uk17freenew.listen2myradio.com:23549/live/radiospihawler2025/m3u8';
 
+    // 🛠️ لێرەدا پڕۆکسی نوێ و بەهێزمان داناوە بۆ ئەوەی کێشەی کۆرس لەناو گیت‌هەب چارەسەر بێت
     const PROXIES = [
-        { label: 'سێرڤەری گشتی', url: 'https://api.allorigins.win/raw?url=' + encodeURIComponent(AUTH_URL), useHLS: true },
-        { label: 'پڕۆکسی پاڵپشت', url: 'https://cors-ebon.vercel.app/api?url=' + encodeURIComponent(AUTH_URL), useHLS: true },
+        { label: 'سێرڤەری خێرا (CORS)', url: 'https://corsproxy.io/?' + encodeURIComponent(AUTH_URL), useHLS: true },
+        { label: 'پڕۆکسی پاڵپشت', url: 'https://api.allorigins.win/raw?url=' + encodeURIComponent(AUTH_URL), useHLS: true },
         { label: 'پەخشی نەیتیڤ', url: AUTH_URL, useHLS: false }
     ];
 
@@ -606,7 +607,10 @@
                 lowLatencyMode: true,
                 maxBufferLength: 10,
                 backBufferLength: 0,
-                enableWorker: true
+                enableWorker: true,
+                xhrSetup: function (xhr, url) {
+                    xhr.withCredentials = false; // 🛠️ بۆ ڕێگریکردن لە کێشەی ناسنامە لەسەر گیت‌هەب
+                }
             });
 
             hls.loadSource(p.url);
