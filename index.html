@@ -70,8 +70,9 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: space-between;
-            padding: 38px 22px 30px;
+            justify-content: center;
+            gap: 24px;
+            padding: 30px 22px;
         }
 
         /* === HEADER === */
@@ -81,6 +82,7 @@
             align-items: center;
             justify-content: center;
             gap: 10px;
+            margin-bottom: auto;
         }
         .live-dot {
             width: 8px; height: 8px;
@@ -112,13 +114,14 @@
             font-weight: 700;
         }
 
-        /* === DISC === */
+        /* === DISC (LOGO) === */
         .disc-wrap {
             position: relative;
             display: flex;
             align-items: center;
             justify-content: center;
             flex-shrink: 0;
+            margin: auto 0;
         }
         .ring {
             position: absolute;
@@ -155,20 +158,20 @@
             border-radius: 50%;
             overflow: hidden;
             position: relative;
+            background: #ffffff; /* 🛠️ دڵنیابوونەوە لە ڕەنگی سپی تەواو بۆ پاشبنەمای لۆگۆکە */
             box-shadow:
                 0 0 0 5px rgba(240,185,11,0.08),
                 0 0 0 11px rgba(240,185,11,0.04),
                 0 24px 64px rgba(0,0,0,0.8),
                 0 0 80px rgba(240,185,11,0.07);
-            animation: disc-spin 10s linear infinite;
-            animation-play-state: paused;
             transition: box-shadow 0.7s ease;
         }
         .disc img {
-            width:100%; height:100%;
-            object-fit:cover;
-            border-radius:50%;
-            display:block;
+            width: 100%; height: 100%;
+            object-fit: contain; /* 🛠️ گۆڕینی بۆ contain بۆ ئەوەی لۆگۆکە نەبڕێت و ڕێک بکەوێت */
+            padding: 12px; /* 🛠️ دروستکردنی بۆشاییەکی یەکسان لە چوار دەور بۆ هێنانە سەنتەری ڕەها */
+            border-radius: 50%;
+            display: block;
         }
         .disc-fallback {
             display:none;
@@ -182,7 +185,7 @@
         .disc-shine {
             position:absolute; inset:0;
             border-radius:50%;
-            background: linear-gradient(135deg, rgba(255,255,255,0.13) 0%, transparent 55%, rgba(0,0,0,0.18) 100%);
+            background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, transparent 55%, rgba(0,0,0,0.05) 100%);
             pointer-events:none;
         }
         .disc-hole {
@@ -195,15 +198,26 @@
             border:2px solid rgba(240,185,11,0.18);
             z-index:2;
         }
-        @keyframes disc-spin { to { transform: rotate(360deg); } }
 
         .is-playing .disc {
-            animation-play-state: running;
-            box-shadow:
-                0 0 0 5px rgba(240,185,11,0.14),
-                0 0 0 11px rgba(240,185,11,0.06),
-                0 24px 64px rgba(0,0,0,0.8),
-                0 0 110px rgba(240,185,11,0.22);
+            animation: logo-glow 3s ease-in-out infinite alternate;
+        }
+        
+        @keyframes logo-glow {
+            0% {
+                box-shadow:
+                    0 0 0 5px rgba(240,185,11,0.12),
+                    0 0 0 12px rgba(240,185,11,0.05),
+                    0 24px 64px rgba(0,0,0,0.8),
+                    0 0 60px rgba(240,185,11,0.15);
+            }
+            100% {
+                box-shadow:
+                    0 0 0 8px rgba(240,185,11,0.25),
+                    0 0 0 20px rgba(240,185,11,0.08),
+                    0 24px 64px rgba(0,0,0,0.8),
+                    0 0 120px rgba(240,185,11,0.4);
+            }
         }
 
         /* === TRACK INFO === */
@@ -352,6 +366,7 @@
             align-items:center;
             justify-content:space-between;
             gap:10px;
+            margin-top: auto;
         }
         .status-group {
             display:flex;
@@ -416,19 +431,17 @@
 
 <div class="shell" id="shell">
 
-    <!-- Header -->
     <div class="header">
         <div class="live-dot"></div>
         <span class="header-label">Radio Spi Hawler</span>
     </div>
 
-    <!-- Disc -->
     <div class="disc-wrap">
         <div class="ring ring-1"></div>
         <div class="ring ring-2"></div>
         <div class="disc" id="disc">
             <img id="logo"
-                src="https://github.com/serverblbas-svg/LOGO/blob/main/photo_2023-08-30_20-43-07.jpg?raw=true"
+                src="https://raw.githubusercontent.com/serverblbas-svg/LOGO/main/photo_2023-08-30_20-43-07.jpg"
                 alt="Radio Spi Hawler"
                 onerror="this.style.display='none';document.getElementById('disc-fallback').style.display='flex';"
             >
@@ -447,13 +460,11 @@
         </div>
     </div>
 
-    <!-- Info -->
     <div class="track-info">
         <div class="track-name">ڕادیۆی سپی هەولێر</div>
         <div class="track-sub">پەخشی ڕاستەوخۆ</div>
     </div>
 
-    <!-- EQ -->
     <div class="eq-wrap">
         <div class="eq-bar"></div>
         <div class="eq-bar"></div>
@@ -464,10 +475,8 @@
         <div class="eq-bar"></div>
     </div>
 
-    <!-- Controls -->
     <div class="controls-row">
 
-        <!-- Mute -->
         <button class="side-btn" id="muteBtn" onclick="toggleMute()">
             <svg id="ico-sound" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
@@ -481,7 +490,6 @@
             </svg>
         </button>
 
-        <!-- Play/Pause -->
         <button class="play-btn" onclick="togglePlay()">
             <svg id="ico-play" width="30" height="30" viewBox="0 0 24 24" fill="currentColor">
                 <polygon points="5 3 19 12 5 21 5 3"></polygon>
@@ -492,7 +500,6 @@
             </svg>
         </button>
 
-        <!-- Reload -->
         <button class="side-btn" id="reloadBtn" onclick="restartStream()" title="Reload">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <polyline points="23 4 23 10 17 10"></polyline>
@@ -502,14 +509,12 @@
 
     </div>
 
-    <!-- Volume -->
     <div class="volume-row">
         <span class="vol-tag">VOL</span>
         <input type="range" id="volSlider" min="0" max="100" value="80" oninput="setVolume(this.value)" style="--vp:80%">
         <span class="vol-tag" id="volNum">80</span>
     </div>
 
-    <!-- Footer -->
     <div class="footer-card">
         <div class="status-group">
             <span class="status-key">دۆخی پەخش</span>
@@ -520,7 +525,6 @@
 
 </div>
 
-<!-- Toast -->
 <div class="toast" id="toast">هەوڵ دەدرێت: <span id="toastMsg">---</span></div>
 
 <audio id="audioEl" preload="none" style="display:none;"></audio>
@@ -529,29 +533,12 @@
 (function () {
     'use strict';
 
-    /* ===== Stream Sources =====
-       We try multiple strategies in order:
-       1. Direct HLS via hls.js (works if server allows CORS or page is HTTP)
-       2. corsproxy.io wrapper
-       3. allorigins plain proxy
-       4. Native <audio> src (Safari/iOS native HLS)
-    */
-    const BASE_URL = 'http://uk17freenew.listen2myradio.com:23549/live/radiospihawler2025/m3u8';
-
-    // Authenticated URL (credentials in URL - for hls.js xhrSetup only)
     const AUTH_URL = 'http://admin:radiospihawler@uk17freenew.listen2myradio.com:23549/live/radiospihawler2025/m3u8';
 
     const PROXIES = [
-        // Strategy A: direct with hls.js + xhrSetup for auth header
-        { label: 'ڕاستەوخۆ', url: AUTH_URL, useHLS: true, direct: true },
-        // Strategy B: corsproxy.io
-        { label: 'پرۆکسی ١', url: 'https://corsproxy.io/?' + encodeURIComponent(AUTH_URL), useHLS: true },
-        // Strategy C: allorigins
-        { label: 'پرۆکسی ٢', url: 'https://api.allorigins.win/raw?url=' + encodeURIComponent(AUTH_URL), useHLS: true },
-        // Strategy D: thingproxy
-        { label: 'پرۆکسی ٣', url: 'https://thingproxy.freeboard.io/fetch/' + AUTH_URL, useHLS: true },
-        // Strategy E: native audio fallback (iOS Safari)
-        { label: 'نەیتیڤ', url: AUTH_URL, useHLS: false },
+        { label: 'سێرڤەری گشتی', url: 'https://api.allorigins.win/raw?url=' + encodeURIComponent(AUTH_URL), useHLS: true },
+        { label: 'پڕۆکسی پاڵپشت', url: 'https://cors-ebon.vercel.app/api?url=' + encodeURIComponent(AUTH_URL), useHLS: true },
+        { label: 'پەخشی نەیتیڤ', url: AUTH_URL, useHLS: false }
     ];
 
     let proxyIndex  = 0;
@@ -566,7 +553,6 @@
     const toastEl   = document.getElementById('toast');
     const toastMsg  = document.getElementById('toastMsg');
 
-    /* ---- UI helpers ---- */
     function setStatus(msg) { statusEl.textContent = msg; }
 
     function showToast(msg, ms) {
@@ -593,7 +579,6 @@
         setStatus('ڕاگیراوە');
     }
 
-    /* ---- HLS Loader ---- */
     function destroyHLS() {
         if (hls) {
             try { hls.destroy(); } catch(e) {}
@@ -603,14 +588,14 @@
 
     function loadProxy(idx) {
         if (idx >= PROXIES.length) {
-            setStatus('ناتوانرێت پەیوەند بکرێت - تکایە دوبارە هەوڵ بدە');
+            setStatus('سێرڤەر وەڵام ناداتەوە، دواتر هەوڵ بدەرەوە');
             onPaused();
             return;
         }
 
         const p = PROXIES[idx];
         proxyIndex = idx;
-        showToast(p.label, 4000);
+        showToast(p.label, 3000);
         setStatus('پەیوەندی دەبەسترێت...');
         destroyHLS();
         audioEl.pause();
@@ -619,15 +604,9 @@
         if (p.useHLS && typeof Hls !== 'undefined' && Hls.isSupported()) {
             hls = new Hls({
                 lowLatencyMode: true,
-                maxBufferLength: 15,
+                maxBufferLength: 10,
                 backBufferLength: 0,
-                maxMaxBufferLength: 30,
-                enableWorker: true,
-                // Pass credentials via xhrSetup for direct strategy
-                xhrSetup: p.direct ? function(xhr, url) {
-                    xhr.withCredentials = false;
-                    // Rewrite URL to include credentials path
-                } : undefined,
+                enableWorker: true
             });
 
             hls.loadSource(p.url);
@@ -643,35 +622,35 @@
             });
 
             hls.on(Hls.Events.ERROR, function(e, data) {
-                console.warn('HLS error', data.type, data.details, 'fatal:', data.fatal);
+                console.warn('HLS error', data.details);
                 if (data.fatal) {
                     const next = idx + 1;
                     if (next < PROXIES.length) {
-                        setTimeout(function() { loadProxy(next); }, 1200);
+                        setTimeout(function() { loadProxy(next); }, 1000);
                     } else {
-                        setStatus('هەڵەی پەیوەندی - کرتەی ریستارت بکە');
+                        setStatus('خەتا لە لۆدکردنی سێرڤەرەکان');
                         onPaused();
                     }
                 }
             });
 
-        } else if (!p.useHLS) {
-            // Native audio (Safari iOS)
+        } else {
             audioEl.src = p.url;
             audioEl.load();
             audioEl.play()
                 .then(onPlaying)
                 .catch(function() {
-                    setStatus('براوزەرەکەت پشتگیری ناکات');
-                    onPaused();
+                    const next = idx + 1;
+                    if (next < PROXIES.length) {
+                        loadProxy(next);
+                    } else {
+                        setStatus('براوزەرەکەت پەخشەکە ناخوێنێتەوە');
+                        onPaused();
+                    }
                 });
-        } else {
-            // HLS not supported, skip to native
-            loadProxy(PROXIES.length - 1);
         }
     }
 
-    /* ---- Public Controls ---- */
     window.togglePlay = function() {
         if (!isPlaying) {
             loadProxy(0);
@@ -687,10 +666,9 @@
         audioEl.pause();
         onPaused();
         proxyIndex = 0;
-        setTimeout(function() { loadProxy(0); }, 400);
+        setTimeout(function() { loadProxy(0); }, 300);
     };
 
-    /* ---- Volume ---- */
     window.setVolume = function(val) {
         const v = parseInt(val);
         audioEl.volume = v / 100;
@@ -732,18 +710,11 @@
         document.getElementById('ico-mute').style.display  = 'none';
     }
 
-    /* ---- Audio Events ---- */
     audioEl.addEventListener('playing', onPlaying);
     audioEl.addEventListener('pause',   onPaused);
     audioEl.addEventListener('waiting', function() { setStatus('بارکردن...'); });
     audioEl.addEventListener('stalled', function() { setStatus('پەیوەندی سست...'); });
-    audioEl.addEventListener('error',   function() {
-        if (isPlaying || proxyIndex > 0) return;
-        setStatus('هەڵەی پەیوەندی');
-        onPaused();
-    });
 
-    /* ---- Init ---- */
     audioEl.volume = 0.8;
 
 })();
