@@ -402,26 +402,6 @@
             border-radius:20px;
             flex-shrink:0;
         }
-
-        /* === RETRY TOAST === */
-        .toast {
-            position:fixed;
-            bottom:20px;
-            left:50%;
-            transform:translateX(-50%) translateY(80px);
-            background:rgba(20,22,32,0.95);
-            border:1px solid rgba(240,185,11,0.2);
-            border-radius:12px;
-            padding:10px 20px;
-            font-size:0.78rem;
-            color:var(--muted);
-            font-family:'Segoe UI',sans-serif;
-            white-space:nowrap;
-            transition:transform 0.35s ease;
-            z-index:99;
-        }
-        .toast.show { transform:translateX(-50%) translateY(0); }
-        .toast span { color:var(--gold); font-weight:600; }
     </style>
 </head>
 <body>
@@ -525,43 +505,24 @@
 
 </div>
 
-<div class="toast" id="toast">هەوڵ دەدرێت: <span id="toastMsg">---</span></div>
-
 <audio id="audioEl" preload="none" style="display:none;"></audio>
 
 <script>
 (function () {
     'use strict';
 
-    const AUTH_URL = 'http://admin:radiospihawler@uk17freenew.listen2myradio.com:23549/live/radiospihawler2025/m3u8';
+    // 🛠️ لێرەدا بەستەرەکەم گۆڕی بۆ HTTPS بەبێ بەکارهێنانی هیچ پڕۆکسییەک بۆ ئەوەی ڕاستەوخۆ لۆد بێت
+    const STREAM_URL = 'https://uk17freenew.listen2myradio.com:23549/live/radiospihawler2025/m3u8';
 
-    // 🛠️ لێرەدا پڕۆکسی نوێ و بەهێزمان داناوە بۆ ئەوەی کێشەی کۆرس لەناو گیت‌هەب چارەسەر بێت
-    const PROXIES = [
-        { label: 'سێرڤەری خێرا (CORS)', url: 'https://corsproxy.io/?' + encodeURIComponent(AUTH_URL), useHLS: true },
-        { label: 'پڕۆکسی پاڵپشت', url: 'https://api.allorigins.win/raw?url=' + encodeURIComponent(AUTH_URL), useHLS: true },
-        { label: 'پەخشی نەیتیڤ', url: AUTH_URL, useHLS: false }
-    ];
-
-    let proxyIndex  = 0;
     let hls         = null;
     let isPlaying   = false;
     let isMuted     = false;
-    let retryTimer  = null;
 
     const audioEl   = document.getElementById('audioEl');
     const shell     = document.getElementById('shell');
     const statusEl  = document.getElementById('statusText');
-    const toastEl   = document.getElementById('toast');
-    const toastMsg  = document.getElementById('toastMsg');
 
     function setStatus(msg) { statusEl.textContent = msg; }
-
-    function showToast(msg, ms) {
-        toastMsg.textContent = msg;
-        toastEl.classList.add('show');
-        clearTimeout(retryTimer);
-        retryTimer = setTimeout(() => { toastEl.classList.remove('show'); }, ms || 3500);
-    }
 
     function onPlaying() {
         isPlaying = true;
@@ -569,7 +530,6 @@
         document.getElementById('ico-play').style.display  = 'none';
         document.getElementById('ico-pause').style.display = 'block';
         setStatus('ئێستا پەخش دەکرێت ڕاستەوخۆ');
-        toastEl.classList.remove('show');
     }
 
     function onPaused() {
@@ -587,77 +547,54 @@
         }
     }
 
-    function loadProxy(idx) {
-        if (idx >= PROXIES.length) {
-            setStatus('سێرڤەر وەڵام ناداتەوە، دواتر هەوڵ بدەرەوە');
-            onPaused();
-            return;
-        }
-
-        const p = PROXIES[idx];
-        proxyIndex = idx;
-        showToast(p.label, 3000);
+    function startStream() {
         setStatus('پەیوەندی دەبەسترێت...');
         destroyHLS();
         audioEl.pause();
         audioEl.removeAttribute('src');
 
-        if (p.useHLS && typeof Hls !== 'undefined' && Hls.isSupported()) {
+        if (typeof Hls !== 'undefined' && Hls.isSupported()) {
             hls = new Hls({
                 lowLatencyMode: true,
-                maxBufferLength: 10,
+                maxBufferLength: 6,
                 backBufferLength: 0,
-                enableWorker: true,
-                xhrSetup: function (xhr, url) {
-                    xhr.withCredentials = false; // 🛠️ بۆ ڕێگریکردن لە کێشەی ناسنامە لەسەر گیت‌هەب
-                }
+                enableWorker: true
             });
 
-            hls.loadSource(p.url);
+            hls.loadSource(STREAM_URL);
             hls.attachMedia(audioEl);
 
             hls.on(Hls.Events.MANIFEST_PARSED, function() {
                 audioEl.play()
                     .then(onPlaying)
-                    .catch(function(err) {
-                        console.warn('play() blocked:', err.message);
+                    .catch(function() {
                         setStatus('کرتە بکە بۆ لێدان');
                     });
             });
 
             hls.on(Hls.Events.ERROR, function(e, data) {
-                console.warn('HLS error', data.details);
                 if (data.fatal) {
-                    const next = idx + 1;
-                    if (next < PROXIES.length) {
-                        setTimeout(function() { loadProxy(next); }, 1000);
-                    } else {
-                        setStatus('خەتا لە لۆدکردنی سێرڤەرەکان');
-                        onPaused();
-                    }
+                    setStatus('کێشە لە پەیوەندی هەیە، دووبارە تاقیکەرەوە');
+                    onPaused();
                 }
             });
 
         } else {
-            audioEl.src = p.url;
+            // بۆ Safari و ئامێرەکانی iOS کە نەیتیڤ HLS دەخوێننەوە
+            audioEl.src = STREAM_URL;
             audioEl.load();
             audioEl.play()
                 .then(onPlaying)
                 .catch(function() {
-                    const next = idx + 1;
-                    if (next < PROXIES.length) {
-                        loadProxy(next);
-                    } else {
-                        setStatus('براوزەرەکەت پەخشەکە ناخوێنێتەوە');
-                        onPaused();
-                    }
+                    setStatus('براوزەرەکەت پەخشەکە ناخوێنێتەوە');
+                    onPaused();
                 });
         }
     }
 
     window.togglePlay = function() {
         if (!isPlaying) {
-            loadProxy(0);
+            startStream();
         } else {
             destroyHLS();
             audioEl.pause();
@@ -669,8 +606,7 @@
         destroyHLS();
         audioEl.pause();
         onPaused();
-        proxyIndex = 0;
-        setTimeout(function() { loadProxy(0); }, 300);
+        setTimeout(function() { startStream(); }, 300);
     };
 
     window.setVolume = function(val) {
