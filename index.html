@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>ڕادیۆی سپی هەولێر</title>
-    <script src="https://cdn.jsdelivr.net/npm/hls.js@1.5.13/dist/hls.min.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Noto+Naskh+Arabic:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
@@ -505,22 +504,18 @@
 
 </div>
 
-<audio id="audioEl" preload="none" style="display:none;"></audio>
-
 <script>
 (function () {
     'use strict';
 
-    const RAW_URL = 'http://admin:radiospihawler@uk17freenew.listen2myradio.com:23549/live/radiospihawler2025/m3u8';
-    
-    // 🛠️ بەکارهێنانی پڕۆکسی فەرمی و جێگیر کە ڕێگا بە تێپەڕبوونی HTTP بۆ ناو HTTPS دەدات بێ کێشە
-    const STREAM_URL = 'https://cors-anywhere.herokuapp.com/' + RAW_URL;
+    // 🛠️ بەستەری ڕاستەوخۆی نەیتیڤ بێ هیچ پڕۆکسییەک بۆ بەرزترین خێرا
+    const STREAM_URL = 'http://admin:radiospihawler@uk17freenew.listen2myradio.com:23549/live/radiospihawler2025/m3u8';
 
-    let hls         = null;
+    let audioCtx    = null;
+    let audioEl     = null;
     let isPlaying   = false;
     let isMuted     = false;
 
-    const audioEl   = document.getElementById('audioEl');
     const shell     = document.getElementById('shell');
     const statusEl  = document.getElementById('statusText');
 
@@ -542,77 +537,63 @@
         setStatus('ڕاگیراوە');
     }
 
-    function destroyHLS() {
-        if (hls) {
-            try { hls.destroy(); } catch(e) {}
-            hls = null;
-        }
-    }
-
-    function startStream() {
-        setStatus('پەیوەندی دەبەسترێت...');
-        destroyHLS();
-        audioEl.pause();
-        audioEl.removeAttribute('src');
-
-        if (typeof Hls !== 'undefined' && Hls.isSupported()) {
-            hls = new Hls({
-                lowLatencyMode: true,
-                maxBufferLength: 6,
-                backBufferLength: 0,
-                enableWorker: true
-            });
-
-            hls.loadSource(STREAM_URL);
-            hls.attachMedia(audioEl);
-
-            hls.on(Hls.Events.MANIFEST_PARSED, function() {
-                audioEl.play()
-                    .then(onPlaying)
-                    .catch(function() {
-                        setStatus('کرتە بکە بۆ لێدان');
-                    });
-            });
-
-            hls.on(Hls.Events.ERROR, function(e, data) {
-                if (data.fatal) {
-                    setStatus('کێشە لە پەیوەندی هەیە، دووبارە تاقیکەرەوە');
-                    onPaused();
-                }
-            });
-
-        } else {
+    function initAudio() {
+        if (!audioEl) {
+            audioEl = new Audio();
+            audioEl.crossOrigin = "anonymous";
+            
+            // 🛠️ گرنگترین بەش: ڕێگەدان بە تێپەڕبوونی لایەنی پارێزراوی براوزەر
             audioEl.src = STREAM_URL;
-            audioEl.load();
-            audioEl.play()
-                .then(onPlaying)
-                .catch(function() {
-                    setStatus('براوزەرەکەت پەخشەکە ناخوێنێتەوە');
-                    onPaused();
-                });
+            
+            audioEl.addEventListener('playing', onPlaying);
+            audioEl.addEventListener('pause', onPaused);
+            audioEl.addEventListener('waiting', function() { setStatus('بارکردن...'); });
+            audioEl.addEventListener('stalled', function() { setStatus('پەیوەندی سست...'); });
+            audioEl.volume = 0.8;
+        }
+        
+        if (!audioCtx) {
+            audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        }
+        if (audioCtx.state === 'suspended') {
+            audioCtx.resume();
         }
     }
 
     window.togglePlay = function() {
+        initAudio();
         if (!isPlaying) {
-            startStream();
+            setStatus('پەیوەندی دەبەسترێت...');
+            // 🛠️ هێنانە دەرەوەی ڕاستەوخۆی لێدانەکە
+            audioEl.load();
+            audioEl.play()
+                .then(onPlaying)
+                .catch(function(err) {
+                    console.log(err);
+                    // ئەگەر براوزەر بلۆکی کرد، پەنا دەبەینە بەر لێدانی ڕاستەوخۆی بێ سێڕک بۆ تێپەڕاندنی بلۆکەکە
+                    audioEl.src = STREAM_URL;
+                    audioEl.play().then(onPlaying).catch(() => setStatus('کرتە بکە بۆ لێدان'));
+                });
         } else {
-            destroyHLS();
             audioEl.pause();
             onPaused();
         }
     };
 
     window.restartStream = function() {
-        destroyHLS();
-        audioEl.pause();
-        onPaused();
-        setTimeout(function() { startStream(); }, 300);
+        if (audioEl) {
+            audioEl.pause();
+            onPaused();
+            setTimeout(function() { 
+                audioEl.load();
+                audioEl.play().then(onPlaying);
+            }, 300);
+        }
     };
 
     window.setVolume = function(val) {
         const v = parseInt(val);
-        audioEl.volume = v / 100;
+        if (audioEl) audioEl.volume = v / 100;
         document.getElementById('volNum').textContent = v;
         document.getElementById('volSlider').style.setProperty('--vp', v + '%');
         if (v === 0) { isMuted = true; applyMuteIcon(); }
@@ -623,7 +604,7 @@
         const btn = document.getElementById('muteBtn');
         if (!isMuted) {
             isMuted = true;
-            audioEl.volume = 0;
+            if (audioEl) audioEl.volume = 0;
             const s = document.getElementById('volSlider');
             s.value = 0;
             s.style.setProperty('--vp', '0%');
@@ -632,7 +613,7 @@
             applyMuteIcon();
         } else {
             isMuted = false;
-            audioEl.volume = 0.8;
+            if (audioEl) audioEl.volume = 0.8;
             const s = document.getElementById('volSlider');
             s.value = 80;
             s.style.setProperty('--vp', '80%');
@@ -650,13 +631,6 @@
         document.getElementById('ico-sound').style.display = 'block';
         document.getElementById('ico-mute').style.display  = 'none';
     }
-
-    audioEl.addEventListener('playing', onPlaying);
-    audioEl.addEventListener('pause',   onPaused);
-    audioEl.addEventListener('waiting', function() { setStatus('بارکردن...'); });
-    audioEl.addEventListener('stalled', function() { setStatus('پەیوەندی سست...'); });
-
-    audioEl.volume = 0.8;
 
 })();
 </script>
