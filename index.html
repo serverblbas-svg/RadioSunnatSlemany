@@ -3,22 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Radio Spi Hawler - ڕادیۆی سپی هەولێر</title>
-    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Arabic:wght@400;700;900&family=Tajawal:wght@400;700;900&display=swap" rel="stylesheet">
+    <title>IPTV Editor - KAMAL PRO ULTRA</title>
     <style>
-        :root {
-            --kurd-red: #da251d;
-            --kurd-yellow: #ffcc00;
-            --kurd-green: #009639;
-            --dark-bg: #080810;
-            --card-bg: rgba(255, 255, 255, 0.02);
-            --glass: rgba(255, 255, 255, 0.06);
-            --glow-red: rgba(218, 37, 29, 0.5);
-            --glow-yellow: rgba(255, 204, 0, 0.5);
-            --glow-green: rgba(0, 150, 57, 0.5);
-        }
-
         * {
             margin: 0;
             padding: 0;
@@ -26,775 +12,347 @@
         }
 
         body {
-            font-family: 'Tajawal', 'Noto Sans Arabic', sans-serif;
-            background: var(--dark-bg);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
             min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
             color: #fff;
             overflow-x: hidden;
+        }
+
+        /* Top Bar - Weather & Clock */
+        .top-bar {
+            background: rgba(15, 23, 42, 0.9);
+            backdrop-filter: blur(20px);
+            border-bottom: 2px solid rgba(255, 215, 0, 0.3);
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
             position: relative;
+            box-shadow: 0 5px 30px rgba(0,0,0,0.5);
         }
 
-        /* Animated Background */
-        .bg-mesh {
-            position: fixed;
-            top: 0; left: 0;
-            width: 100vw; height: 100vh;
-            z-index: -2;
-            background:
-                radial-gradient(at 0% 0%, var(--kurd-red) 0px, transparent 50%),
-                radial-gradient(at 100% 0%, var(--kurd-yellow) 0px, transparent 50%),
-                radial-gradient(at 100% 100%, var(--kurd-green) 0px, transparent 50%),
-                radial-gradient(at 0% 100%, #1a1a3e 0px, transparent 50%);
-            background-size: 200% 200%;
-            animation: meshMove 15s ease infinite;
-            opacity: 0.35;
-        }
-
-        @keyframes meshMove {
-            0% { background-position: 0% 0%; }
-            50% { background-position: 100% 100%; }
-            100% { background-position: 0% 0%; }
-        }
-
-        .orb {
-            position: fixed;
-            border-radius: 50%;
-            filter: blur(100px);
-            z-index: -1;
-            animation: orbFloat 25s infinite ease-in-out;
-        }
-        .orb-1 { width: 500px; height: 500px; background: var(--kurd-red); top: -150px; left: -150px; opacity: 0.25; animation-delay: 0s; }
-        .orb-2 { width: 400px; height: 400px; background: var(--kurd-yellow); bottom: -100px; right: -100px; opacity: 0.2; animation-delay: -8s; }
-        .orb-3 { width: 350px; height: 350px; background: var(--kurd-green); top: 40%; left: 40%; opacity: 0.15; animation-delay: -15s; }
-
-        @keyframes orbFloat {
-            0%, 100% { transform: translate(0, 0) scale(1); }
-            33% { transform: translate(40px, -60px) scale(1.15); }
-            66% { transform: translate(-30px, 40px) scale(0.85); }
-        }
-
-        /* Main Card */
-        .main-card {
-            width: 95%;
-            max-width: 900px;
-            background: rgba(10, 10, 25, 0.75);
-            backdrop-filter: blur(40px);
-            -webkit-backdrop-filter: blur(40px);
-            border-radius: 50px;
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            padding: 60px 50px;
-            box-shadow:
-                0 40px 80px rgba(0,0,0,0.7),
-                0 0 0 1px rgba(255,255,255,0.05),
-                inset 0 1px 0 rgba(255,255,255,0.1);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .main-card::before {
+        .top-bar::before {
             content: '';
             position: absolute;
-            top: 0; left: 0; right: 0; height: 5px;
-            background: linear-gradient(90deg, var(--kurd-red), var(--kurd-yellow), var(--kurd-green), var(--kurd-yellow), var(--kurd-red));
+            bottom: -2px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, #da251d, #ffd700, #009639, #ffd700, #da251d);
             background-size: 200% auto;
-            animation: borderGlow 3s ease-in-out infinite;
+            animation: borderGlow 3s linear infinite;
         }
 
         @keyframes borderGlow {
-            0%, 100% { opacity: 0.6; background-position: 0% center; }
-            50% { opacity: 1; background-position: 100% center; }
-        }
-
-        /* ========== KURDISH DATE - BIG AT TOP ========== */
-        .kurdish-date-hero {
-            text-align: center;
-            margin-bottom: 40px;
-            padding: 30px 20px;
-            background: rgba(0, 150, 57, 0.08);
-            border-radius: 30px;
-            border: 1px solid rgba(0, 150, 57, 0.2);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .kurdish-date-hero::before {
-            content: '';
-            position: absolute;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: linear-gradient(135deg, rgba(0,150,57,0.1), rgba(255,204,0,0.05), rgba(218,37,29,0.1));
-            z-index: 0;
-        }
-
-        .kurdish-date-hero > * {
-            position: relative;
-            z-index: 1;
-        }
-
-        .kurdish-year-label {
-            font-size: 1.3em;
-            font-weight: 700;
-            color: rgba(255,255,255,0.6);
-            margin-bottom: 10px;
-            letter-spacing: 3px;
-        }
-
-        .kurdish-year-big {
-            font-size: 5em;
-            font-weight: 900;
-            background: linear-gradient(to bottom, #fff, var(--kurd-yellow), var(--kurd-green));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            text-shadow: 0 0 60px var(--glow-yellow);
-            line-height: 1.1;
-            margin-bottom: 10px;
-            letter-spacing: 5px;
-        }
-
-        .kurdish-date-full {
-            font-size: 2.2em;
-            font-weight: 900;
-            color: #fff;
-            text-shadow: 0 0 30px rgba(255,255,255,0.3);
-            letter-spacing: 2px;
-            margin-bottom: 15px;
-        }
-
-        .kurdish-day-name {
-            font-size: 2.8em;
-            font-weight: 900;
-            background: linear-gradient(90deg, var(--kurd-red), var(--kurd-yellow), var(--kurd-green), var(--kurd-yellow), var(--kurd-red));
-            background-size: 300% auto;
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            animation: gradientFlow 4s linear infinite;
-            letter-spacing: 4px;
-        }
-
-        @keyframes gradientFlow {
             0% { background-position: 0% center; }
-            100% { background-position: 300% center; }
+            100% { background-position: 200% center; }
         }
 
-        /* Header / Logo */
-        .header {
+        /* Weather Section */
+        .weather-section {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .weather-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 12px 20px;
             text-align: center;
-            margin-bottom: 40px;
-        }
-
-        .logo-ring {
-            width: 180px;
-            height: 180px;
-            border-radius: 50%;
-            margin: 0 auto 30px;
-            position: relative;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 80px;
-            background: linear-gradient(135deg, var(--kurd-red), var(--kurd-yellow), var(--kurd-green));
-            background-size: 200% 200%;
-            box-shadow:
-                0 0 50px var(--glow-red),
-                0 0 100px var(--glow-yellow),
-                inset 0 0 30px rgba(255,255,255,0.2);
-            animation: logoPulse 3s ease-in-out infinite, gradientShift 4s ease infinite;
-        }
-
-        .logo-ring::before {
-            content: '';
-            position: absolute;
-            inset: -10px;
-            border-radius: 50%;
-            border: 4px solid transparent;
-            border-top-color: var(--kurd-yellow);
-            border-bottom-color: var(--kurd-green);
-            animation: spinRing 5s linear infinite;
-        }
-
-        .logo-ring::after {
-            content: '';
-            position: absolute;
-            inset: -20px;
-            border-radius: 50%;
-            border: 2px dashed rgba(255,255,255,0.2);
-            animation: spinRing 20s linear infinite reverse;
-        }
-
-        @keyframes logoPulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.1); }
-        }
-
-        @keyframes gradientShift {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
-
-        @keyframes spinRing {
-            100% { transform: rotate(360deg); }
-        }
-
-        h1 {
-            font-size: 3.5em;
-            font-weight: 900;
-            background: linear-gradient(to right, #fff, var(--kurd-yellow), #fff, var(--kurd-yellow), #fff);
-            background-size: 200% auto;
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            animation: shine 5s linear infinite;
-            letter-spacing: 3px;
-            margin-bottom: 10px;
-        }
-
-        @keyframes shine {
-            to { background-position: 200% center; }
-        }
-
-        .subtitle {
-            font-size: 1.6em;
-            color: rgba(255,255,255,0.5);
-            font-weight: 400;
-            letter-spacing: 4px;
-        }
-
-        /* Visualizer */
-        .visualizer-wrap {
-            height: 100px;
-            margin: 40px 0;
-            display: flex;
-            justify-content: center;
-            align-items: flex-end;
-            gap: 6px;
-            opacity: 0.3;
-            transition: opacity 0.5s, transform 0.5s;
-            transform: scaleY(0.8);
-        }
-
-        .visualizer-wrap.active {
-            opacity: 1;
-            transform: scaleY(1);
-        }
-
-        .v-bar {
-            width: 10px;
-            border-radius: 5px;
-            background: linear-gradient(to top, var(--kurd-red), var(--kurd-yellow), var(--kurd-green));
-            animation: vBarAnim 1.2s ease-in-out infinite;
-        }
-
-        .v-bar:nth-child(1)  { height: 20%; animation-delay: 0.0s; }
-        .v-bar:nth-child(2)  { height: 40%; animation-delay: 0.1s; }
-        .v-bar:nth-child(3)  { height: 60%; animation-delay: 0.2s; }
-        .v-bar:nth-child(4)  { height: 30%; animation-delay: 0.3s; }
-        .v-bar:nth-child(5)  { height: 80%; animation-delay: 0.4s; }
-        .v-bar:nth-child(6)  { height: 50%; animation-delay: 0.5s; }
-        .v-bar:nth-child(7)  { height: 90%; animation-delay: 0.6s; }
-        .v-bar:nth-child(8)  { height: 35%; animation-delay: 0.7s; }
-        .v-bar:nth-child(9)  { height: 70%; animation-delay: 0.8s; }
-        .v-bar:nth-child(10) { height: 25%; animation-delay: 0.9s; }
-        .v-bar:nth-child(11) { height: 85%; animation-delay: 1.0s; }
-        .v-bar:nth-child(12) { height: 45%; animation-delay: 1.1s; }
-        .v-bar:nth-child(13) { height: 75%; animation-delay: 1.2s; }
-        .v-bar:nth-child(14) { height: 55%; animation-delay: 1.3s; }
-        .v-bar:nth-child(15) { height: 95%; animation-delay: 1.4s; }
-        .v-bar:nth-child(16) { height: 40%; animation-delay: 1.5s; }
-        .v-bar:nth-child(17) { height: 65%; animation-delay: 1.6s; }
-        .v-bar:nth-child(18) { height: 85%; animation-delay: 1.7s; }
-        .v-bar:nth-child(19) { height: 30%; animation-delay: 1.8s; }
-        .v-bar:nth-child(20) { height: 100%; animation-delay: 1.9s; }
-
-        @keyframes vBarAnim {
-            0%, 100% { transform: scaleY(0.4); }
-            50% { transform: scaleY(1); }
-        }
-
-        /* Controls */
-        .controls {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 40px;
-            margin: 40px 0;
-        }
-
-        .ctrl-btn {
-            width: 70px;
-            height: 70px;
-            border-radius: 50%;
-            border: 1px solid rgba(255,255,255,0.15);
-            background: rgba(255,255,255,0.05);
-            color: #fff;
-            font-size: 28px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            min-width: 140px;
             transition: all 0.3s ease;
-            backdrop-filter: blur(10px);
-        }
-
-        .ctrl-btn:hover {
-            background: rgba(255,255,255,0.15);
-            transform: scale(1.2);
-            border-color: var(--kurd-yellow);
-            box-shadow: 0 0 30px var(--glow-yellow);
-        }
-
-        .play-btn {
-            width: 120px;
-            height: 120px;
-            border-radius: 50%;
-            border: none;
-            background: linear-gradient(135deg, var(--kurd-red), var(--kurd-yellow), var(--kurd-green));
-            background-size: 200% 200%;
-            color: #fff;
-            font-size: 48px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow:
-                0 15px 50px var(--glow-red),
-                0 0 80px var(--glow-yellow);
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             position: relative;
             overflow: hidden;
-            animation: gradientShift 3s ease infinite;
         }
 
-        .play-btn:hover {
-            transform: scale(1.2) rotate(5deg);
-            box-shadow:
-                0 20px 60px var(--glow-red),
-                0 0 100px var(--glow-yellow),
-                0 0 50px var(--glow-green);
+        .weather-card:hover {
+            transform: translateY(-5px);
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(255, 215, 0, 0.4);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
         }
 
-        .play-btn:active {
-            transform: scale(0.9);
-        }
-
-        .play-btn.playing {
-            animation: gradientShift 3s ease infinite, playPulse 2s ease-in-out infinite;
-        }
-
-        @keyframes playPulse {
-            0%, 100% { box-shadow: 0 15px 50px var(--glow-red), 0 0 80px var(--glow-yellow); }
-            50% { box-shadow: 0 20px 70px var(--glow-red), 0 0 120px var(--glow-yellow), 0 0 60px var(--glow-green); }
-        }
-
-        /* Volume */
-        .volume-row {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 20px;
-            margin: 25px 0;
-        }
-
-        .vol-icon {
-            font-size: 24px;
+        .weather-card::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #da251d, #ffd700, #009639);
             opacity: 0.6;
         }
 
-        .vol-slider {
-            width: 250px;
-            height: 10px;
-            border-radius: 5px;
-            background: rgba(255,255,255,0.1);
-            outline: none;
-            -webkit-appearance: none;
-            cursor: pointer;
+        .weather-city {
+            font-size: 0.9em;
+            font-weight: 700;
+            color: rgba(255,255,255,0.7);
+            margin-bottom: 5px;
         }
 
-        .vol-slider::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            width: 28px;
-            height: 28px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, var(--kurd-yellow), var(--kurd-green));
-            cursor: pointer;
-            box-shadow: 0 0 20px var(--glow-yellow);
-            border: 3px solid #fff;
-            transition: transform 0.2s;
+        .weather-icon {
+            font-size: 2em;
+            margin: 5px 0;
+            filter: drop-shadow(0 0 10px rgba(255,215,0,0.3));
         }
 
-        .vol-slider::-webkit-slider-thumb:hover {
-            transform: scale(1.4);
-        }
-
-        /* Status */
-        .status {
-            text-align: center;
-            margin: 25px 0;
-            padding: 15px 30px;
-            border-radius: 50px;
+        .weather-temp {
+            font-size: 1.8em;
             font-weight: 900;
-            font-size: 1.3em;
-            transition: all 0.4s;
-            display: inline-block;
-            width: 100%;
-            letter-spacing: 2px;
+            color: #ffd700;
+            text-shadow: 0 0 20px rgba(255,215,0,0.4);
         }
 
-        .status.ready {
-            background: linear-gradient(90deg, rgba(0,150,57,0.2), rgba(0,150,57,0.1));
-            color: var(--kurd-green);
-            border: 1px solid rgba(0,150,57,0.3);
-        }
-        .status.playing {
-            background: linear-gradient(90deg, rgba(255,204,0,0.2), rgba(255,204,0,0.1));
-            color: var(--kurd-yellow);
-            border: 1px solid rgba(255,204,0,0.3);
-            animation: statusPulse 2s ease-in-out infinite;
-        }
-        .status.error {
-            background: linear-gradient(90deg, rgba(218,37,29,0.2), rgba(218,37,29,0.1));
-            color: var(--kurd-red);
-            border: 1px solid rgba(218,37,29,0.3);
+        .weather-desc {
+            font-size: 0.75em;
+            color: rgba(255,255,255,0.5);
+            margin-top: 3px;
         }
 
-        @keyframes statusPulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.7; }
-        }
-
-        /* ========== CLOCK SECTION ========== */
+        /* Clock & Date Section */
         .clock-section {
-            background: rgba(0,0,0,0.3);
-            border-radius: 35px;
-            padding: 50px 40px;
-            margin-top: 40px;
-            border: 1px solid rgba(255,255,255,0.08);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .clock-section::before {
-            content: '';
-            position: absolute;
-            top: 0; left: 0; right: 0; height: 4px;
-            background: linear-gradient(90deg, var(--kurd-red), var(--kurd-yellow), var(--kurd-green));
-            opacity: 0.7;
+            text-align: left;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 5px;
         }
 
         .mega-clock {
-            font-size: 6.5em;
+            font-size: 3em;
             font-weight: 900;
-            text-align: center;
-            font-family: 'Tajawal', 'Courier New', monospace;
-            background: linear-gradient(to bottom, #fff, var(--kurd-yellow), var(--kurd-yellow));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            text-shadow: 0 0 80px var(--glow-yellow);
-            letter-spacing: 6px;
-            margin-bottom: 15px;
+            color: #ffd700;
+            text-shadow: 0 0 30px rgba(255,215,0,0.5);
+            font-family: 'Courier New', monospace;
+            letter-spacing: 3px;
             line-height: 1;
         }
 
-        .mega-clock .seconds {
-            font-size: 0.45em;
-            opacity: 0.7;
-            margin-right: 15px;
+        .date-line {
+            font-size: 1em;
+            color: rgba(255,255,255,0.7);
+            font-weight: 600;
         }
 
-        .ampm {
-            font-size: 1.5em;
+        .date-line .highlight {
+            color: #ffd700;
             font-weight: 900;
-            color: var(--kurd-yellow);
-            opacity: 0.9;
-            text-align: center;
-            margin-bottom: 40px;
-            letter-spacing: 6px;
         }
 
-        /* Date Cards */
-        .dates-grid {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 20px;
+        /* Main Content */
+        .main-content {
+            padding: 30px;
+            max-width: 1400px;
+            margin: 0 auto;
         }
 
-        .date-card {
-            background: rgba(255,255,255,0.03);
-            border-radius: 25px;
-            padding: 30px 35px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            border: 1px solid rgba(255,255,255,0.06);
-            transition: all 0.4s ease;
+        /* Video Player Area */
+        .player-area {
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            margin-top: 20px;
+            min-height: 500px;
             position: relative;
             overflow: hidden;
         }
 
-        .date-card::before {
+        .player-area::before {
             content: '';
             position: absolute;
-            right: 0; top: 0; bottom: 0;
-            width: 5px;
-            border-radius: 3px;
-            transition: width 0.4s;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #da251d, #ffd700, #009639);
+            opacity: 0.7;
         }
 
-        .date-card:hover {
-            background: rgba(255,255,255,0.07);
-            transform: translateX(-10px) scale(1.03);
-            border-color: rgba(255,255,255,0.2);
-            box-shadow: 0 15px 40px rgba(0,0,0,0.4);
+        .player-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
         }
 
-        .date-card:hover::before {
-            width: 8px;
+        .player-title {
+            font-size: 1.5em;
+            font-weight: 900;
+            background: linear-gradient(to right, #fff, #ffd700);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
 
-        .date-card.hijri::before { background: var(--kurd-green); }
-        .date-card.gregorian::before { background: var(--kurd-yellow); }
+        .badge {
+            background: linear-gradient(135deg, #da251d, #ffd700);
+            color: #000;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-weight: 900;
+            font-size: 0.9em;
+        }
 
-        .date-info {
+        /* Status Bar */
+        .status-bar {
+            display: flex;
+            gap: 20px;
+            margin-top: 20px;
+            padding: 15px;
+            background: rgba(255,255,255,0.03);
+            border-radius: 15px;
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .status-item {
             display: flex;
             align-items: center;
-            gap: 20px;
-        }
-
-        .date-icon {
-            font-size: 3em;
-            filter: drop-shadow(0 0 15px rgba(255,255,255,0.3));
-        }
-
-        .date-label {
-            font-weight: 900;
-            font-size: 1.4em;
+            gap: 8px;
+            font-size: 0.9em;
             color: rgba(255,255,255,0.6);
-            letter-spacing: 2px;
         }
 
-        .date-value {
-            font-size: 1.9em;
+        .status-item .value {
+            color: #ffd700;
             font-weight: 900;
-            direction: ltr;
-            text-align: left;
-            letter-spacing: 2px;
-        }
-
-        .date-value.hijri { color: var(--kurd-green); text-shadow: 0 0 30px var(--glow-green); }
-        .date-value.gregorian { color: var(--kurd-yellow); text-shadow: 0 0 30px var(--glow-yellow); }
-
-        /* Footer */
-        .footer {
-            text-align: center;
-            margin-top: 40px;
-            color: rgba(255,255,255,0.3);
-            font-size: 1.2em;
-            letter-spacing: 3px;
-        }
-
-        .footer .heart {
-            color: var(--kurd-red);
-            font-size: 1.4em;
-            animation: heartbeat 1.5s ease-in-out infinite;
-            display: inline-block;
-        }
-
-        @keyframes heartbeat {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.3); }
         }
 
         /* Responsive */
-        @media (max-width: 700px) {
-            .main-card { padding: 35px 25px; border-radius: 30px; }
-            .kurdish-year-big { font-size: 3em; }
-            .kurdish-date-full { font-size: 1.4em; }
-            .kurdish-day-name { font-size: 1.8em; }
-            h1 { font-size: 2.2em; }
-            .subtitle { font-size: 1.1em; }
-            .mega-clock { font-size: 4em; }
-            .logo-ring { width: 130px; height: 130px; font-size: 56px; }
-            .date-value { font-size: 1.3em; }
-            .date-label { font-size: 1em; }
-            .date-icon { font-size: 2.2em; }
-            .play-btn { width: 90px; height: 90px; font-size: 36px; }
-            .ctrl-btn { width: 55px; height: 55px; font-size: 22px; }
-            .vol-slider { width: 160px; }
+        @media (max-width: 900px) {
+            .top-bar {
+                flex-direction: column;
+                gap: 20px;
+            }
+            .weather-section {
+                justify-content: center;
+            }
+            .clock-section {
+                align-items: center;
+            }
+            .mega-clock {
+                font-size: 2.2em;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .weather-card {
+                min-width: 100px;
+                padding: 10px;
+            }
+            .mega-clock {
+                font-size: 1.8em;
+            }
         }
     </style>
-<base target="_blank">
 </head>
 <body>
-    <div class="bg-mesh"></div>
-    <div class="orb orb-1"></div>
-    <div class="orb orb-2"></div>
-    <div class="orb orb-3"></div>
 
-    <div class="main-card">
-        <!-- KURDISH DATE - BIG AT TOP -->
-        <div class="kurdish-date-hero">
-            <div class="kurdish-year-label">📜 ساڵی کوردى</div>
-            <div class="kurdish-year-big" id="kurdishYear">2726</div>
-            <div class="kurdish-date-full" id="kurdishDateFull">...</div>
-            <div class="kurdish-day-name" id="kurdishDayName">...</div>
-        </div>
-
-        <!-- Header -->
-        <div class="header">
-            <div class="logo-ring">📻</div>
-            <h1>Radio Spi Hawler</h1>
-            <div class="subtitle">ڕادیۆی سپی هەولێر</div>
-        </div>
-
-        <!-- Visualizer -->
-        <div class="visualizer-wrap" id="visualizer">
-            <div class="v-bar"></div><div class="v-bar"></div><div class="v-bar"></div>
-            <div class="v-bar"></div><div class="v-bar"></div><div class="v-bar"></div>
-            <div class="v-bar"></div><div class="v-bar"></div><div class="v-bar"></div>
-            <div class="v-bar"></div><div class="v-bar"></div><div class="v-bar"></div>
-            <div class="v-bar"></div><div class="v-bar"></div><div class="v-bar"></div>
-            <div class="v-bar"></div><div class="v-bar"></div><div class="v-bar"></div>
-            <div class="v-bar"></div><div class="v-bar"></div>
-        </div>
-
-        <!-- Controls -->
-        <div class="controls">
-            <button class="ctrl-btn" onclick="changeVol(-0.1)" title="کەمکردنەوە">🔉</button>
-            <button class="play-btn" id="playBtn" onclick="togglePlay()" title="پەخش/ڕاگرتن">
-                <span id="playIcon">▶</span>
-            </button>
-            <button class="ctrl-btn" onclick="changeVol(0.1)" title="بەرزکردنەوە">🔊</button>
-        </div>
-
-        <div class="volume-row">
-            <span class="vol-icon">🔇</span>
-            <input type="range" class="vol-slider" id="volSlider" min="0" max="100" value="80" oninput="setVol(this.value)">
-            <span class="vol-icon">🔊</span>
-        </div>
-
-        <div class="status ready" id="status">✅ ئامادەیە — پەخش بکە</div>
-
-        <!-- CLOCK & OTHER DATES -->
-        <div class="clock-section">
-            <div class="mega-clock" id="megaClock">00:00<span class="seconds">:00</span></div>
-            <div class="ampm" id="ampm">---</div>
-
-            <div class="dates-grid">
-                <div class="date-card hijri">
-                    <div class="date-info">
-                        <span class="date-icon">🌙</span>
-                        <span class="date-label">ڕێکەتی هیجری</span>
-                    </div>
-                    <div class="date-value hijri" id="hijriDate">...</div>
-                </div>
-
-                <div class="date-card gregorian">
-                    <div class="date-info">
-                        <span class="date-icon">📅</span>
-                        <span class="date-label">ڕێکەتی میلادی</span>
-                    </div>
-                    <div class="date-value gregorian" id="gregorianDate">...</div>
-                </div>
+    <!-- Top Bar: Weather + Clock -->
+    <div class="top-bar">
+        <div class="weather-section" id="weatherSection">
+            <div class="weather-card" data-city="hawler">
+                <div class="weather-city">هەولێر</div>
+                <div class="weather-icon" id="hawler-icon">⛅</div>
+                <div class="weather-temp" id="hawler-temp">--°</div>
+                <div class="weather-desc" id="hawler-desc">...</div>
+            </div>
+            <div class="weather-card" data-city="slemani">
+                <div class="weather-city">سلێمانی</div>
+                <div class="weather-icon" id="slemani-icon">⛅</div>
+                <div class="weather-temp" id="slemani-temp">--°</div>
+                <div class="weather-desc" id="slemani-desc">...</div>
+            </div>
+            <div class="weather-card" data-city="duhok">
+                <div class="weather-city">دهۆک</div>
+                <div class="weather-icon" id="duhok-icon">⛅</div>
+                <div class="weather-temp" id="duhok-temp">--°</div>
+                <div class="weather-desc" id="duhok-desc">...</div>
+            </div>
+            <div class="weather-card" data-city="kirkuk">
+                <div class="weather-city">کەرکووک</div>
+                <div class="weather-icon" id="kirkuk-icon">⛅</div>
+                <div class="weather-temp" id="kirkuk-temp">--°</div>
+                <div class="weather-desc" id="kirkuk-desc">...</div>
+            </div>
+            <div class="weather-card" data-city="halabja">
+                <div class="weather-city">هەڵەبجە</div>
+                <div class="weather-icon" id="halabja-icon">⛅</div>
+                <div class="weather-temp" id="halabja-temp">--°</div>
+                <div class="weather-desc" id="halabja-desc">...</div>
             </div>
         </div>
 
-        <div class="footer">
-            بە دیزاینێکی جوان و سەرنجڕاکێش <span class="heart">❤</span> هەولێر
+        <div class="clock-section">
+            <div class="mega-clock" id="megaClock">00:00:00</div>
+            <div class="date-line" id="gregorianDate">...</div>
+            <div class="date-line" id="kurdishDate">...</div>
+            <div class="date-line" id="hijriDate">...</div>
         </div>
     </div>
 
-    <audio id="audioPlayer" crossorigin="anonymous"></audio>
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="player-area">
+            <div class="player-header">
+                <div class="player-title">📻 Radio Spi Hawler - ڕادیۆی سپی هەولێر</div>
+                <div class="badge">LIVE</div>
+            </div>
+            
+            <!-- Audio Player -->
+            <audio id="audioPlayer" controls style="width: 100%; margin-top: 20px; opacity: 0.8;">
+                <source src="https://media2.streambrothers.com:1936/8218/8218/chunklist_w1622172701.m3u8" type="application/x-mpegURL">
+            </audio>
+
+            <div class="status-bar">
+                <div class="status-item">
+                    <span>📡</span>
+                    <span>Status: <span class="value" id="streamStatus">Ready</span></span>
+                </div>
+                <div class="status-item">
+                    <span>🎵</span>
+                    <span>Volume: <span class="value" id="volDisplay">80%</span></span>
+                </div>
+                <div class="status-item">
+                    <span>📊</span>
+                    <span>Channels: <span class="value">2545</span></span>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <script>
-        const STREAM_URL = 'https://media2.streambrothers.com:1936/8218/8218/chunklist_w1622172701.m3u8';
+        // Kurdish Calendar Data
+        const kurdishMonths = ['خاکەلێوە', 'گوڵان', 'جۆزەردان', 'پووشپەڕ', 'گەلاوێژ', 'خەرمانان', 'ڕەزبەر', 'گەڵاڕێزان', 'سەرەوە', 'بەفرانبار', 'ڕێبەندان', 'ڕەشەمێ'];
+        const kurdishDays = ['یەکشەممە', 'دووشەممە', 'سێشەممە', 'چوارشەممە', 'پێنجشەممە', 'هەینی', 'شەممە'];
+        const hijriMonths = ['محرم', 'صفر', 'ربيع الأول', 'ربيع الثاني', 'جمادى الأولى', 'جمادى الآخرة', 'رجب', 'شعبان', 'رمضان', 'شوال', 'ذو القعدة', 'ذو الحجة'];
 
-        let hls;
-        let isPlaying = false;
-        const audio = document.getElementById('audioPlayer');
-        const playBtn = document.getElementById('playBtn');
-        const playIcon = document.getElementById('playIcon');
-        const visualizer = document.getElementById('visualizer');
-        const status = document.getElementById('status');
+        // Weather Icons mapping
+        const weatherIcons = {
+            0: '☀️', 1: '🌤', 2: '⛅', 3: '☁️', 45: '🌫', 48: '🌫',
+            51: '🌦', 53: '🌧', 55: '🌧', 61: '🌧', 63: '🌧', 65: '🌧',
+            71: '🌨', 73: '🌨', 75: '🌨', 80: '🌧', 81: '🌧', 82: '🌧',
+            95: '⛈', 96: '⛈', 99: '⛈'
+        };
 
-        function initPlayer() {
-            if (Hls.isSupported()) {
-                hls = new Hls({ enableWorker: true, lowLatencyMode: true, backBufferLength: 90 });
-                hls.loadSource(STREAM_URL);
-                hls.attachMedia(audio);
-                hls.on(Hls.Events.ERROR, function(event, data) {
-                    if (data.fatal) {
-                        status.className = 'status error';
-                        status.textContent = '❌ هەڵە لە پەیوەندی';
-                    }
-                });
-            } else if (audio.canPlayType('application/vnd.apple.mpegurl')) {
-                audio.src = STREAM_URL;
-            } else {
-                status.className = 'status error';
-                status.textContent = '❌ براوسەر پشتگیری ناکات';
-            }
-        }
+        const weatherDescs = {
+            0: 'ئاسمان ڕۆشن', 1: 'سەرەکی ڕۆشن', 2: 'هەندێک هەور', 3: 'هەورە',
+            45: 'تەڕە', 48: 'تەڕە', 51: 'بارانێکی کەم', 53: 'باران', 55: 'بارانی زۆر',
+            61: 'بارانێکی کەم', 63: 'باران', 65: 'بارانی زۆر', 71: 'بەفر', 73: 'بەفر', 75: 'بەفر',
+            80: 'باران', 81: 'باران', 82: 'بارانی زۆر', 95: 'هەورەگرمە', 96: 'هەورەگرمە', 99: 'هەورەگرمە'
+        };
 
-        function togglePlay() {
-            if (!isPlaying) {
-                audio.play().then(() => {
-                    isPlaying = true;
-                    playIcon.textContent = '⏸';
-                    playBtn.classList.add('playing');
-                    visualizer.classList.add('active');
-                    status.className = 'status playing';
-                    status.textContent = '🔴 پەخش دەکات...';
-                }).catch(e => {
-                    status.className = 'status error';
-                    status.textContent = '❌ ناتوانێت پەخش بکات';
-                });
-            } else {
-                audio.pause();
-                isPlaying = false;
-                playIcon.textContent = '▶';
-                playBtn.classList.remove('playing');
-                visualizer.classList.remove('active');
-                status.className = 'status ready';
-                status.textContent = '⏹ ڕاگیرا — پەخش بکە';
-            }
-        }
-
-        function setVol(v) { audio.volume = v / 100; }
-        function changeVol(d) {
-            let nv = Math.max(0, Math.min(1, audio.volume + d));
-            audio.volume = nv;
-            document.getElementById('volSlider').value = Math.round(nv * 100);
-        }
-
-        // Kurdish calendar data
-        const kurdishMonths = [
-            'خاکەلێوە', 'گوڵان', 'جۆزەردان', 'پووشپەڕ', 'گەلاوێژ', 'خەرمانان',
-            'ڕەزبەر', 'گەڵاڕێزان', 'سەرەوە', 'بەفرانبار', 'ڕێبەندان', 'ڕەشەمێ'
-        ];
-        const kurdishDays = [
-            'یەکشەممە', 'دووشەممە', 'سێشەممە', 'چوارشەممە', 'پێنجشەممە', 'هەینی', 'شەممە'
-        ];
-        const hijriMonths = [
-            'مۇحەرەم', 'سەفەر', 'ڕەبیعەلئەوwel', 'ڕەبیعەس-sani',
-            'جومادەلئولا', 'جومادەس-sani', 'ڕەجەب', 'شەعبان',
-            'ڕەمەزان', 'شەووال', 'زوقەدە', 'زولحەججە'
-        ];
-
-        // KRG Kurdish year = Gregorian + 700 (approximate)
-        function getKurdishYear(gregorianYear) {
-            return gregorianYear + 700;
-        }
-
-        function toHijri(d) {
-            const jd = Math.floor((1461 * (d.getFullYear() + 4800 + Math.floor((d.getMonth() - 14) / 12))) / 4) +
-                Math.floor((367 * (d.getMonth() - 2 - 12 * Math.floor((d.getMonth() - 14) / 12))) / 12) -
-                Math.floor((3 * Math.floor((d.getFullYear() + 4900 + Math.floor((d.getMonth() - 14) / 12)) / 100)) / 4) +
-                d.getDate() - 32075;
+        // Hijri conversion (approximate)
+        function toHijri(date) {
+            const jd = Math.floor((1461 * (date.getFullYear() + 4800 + Math.floor((date.getMonth() - 14) / 12))) / 4) +
+                Math.floor((367 * (date.getMonth() - 2 - 12 * Math.floor((date.getMonth() - 14) / 12))) / 12) -
+                Math.floor((3 * Math.floor((date.getFullYear() + 4900 + Math.floor((date.getMonth() - 14) / 12)) / 100)) / 4) +
+                date.getDate() - 32075;
             const l = jd - 1948440 + 10632;
             const n = Math.floor((l - 1) / 10631);
             const j = l - 10631 * n + 354;
@@ -805,44 +363,85 @@
             const year = Math.floor((11 * n + 3) / 30) + 1 + 1;
             const month = jm - 1;
             const day = jd2;
-            return `${day}ی ${hijriMonths[month]}ی ${year}ی هەتاوی`;
+            return { day, month: hijriMonths[month], year };
         }
 
-        function updateClock() {
+        // Update Clock & Dates
+        function updateDateTime() {
             const now = new Date();
             const h = String(now.getHours()).padStart(2, '0');
             const m = String(now.getMinutes()).padStart(2, '0');
             const s = String(now.getSeconds()).padStart(2, '0');
 
-            // Mega clock
-            document.getElementById('megaClock').innerHTML = `${h}:${m}<span class="seconds">:${s}</span>`;
-            document.getElementById('ampm').textContent = `${now.getHours() >= 12 ? 'پاش نیوەڕۆ' : 'پێش نیوەڕۆ'} — ${h}:${m}`;
-
-            // KRG Kurdish Date (BIG AT TOP)
-            const kurdYear = getKurdishYear(now.getFullYear());
-            document.getElementById('kurdishYear').textContent = kurdYear;
-
-            const kurdDay = kurdishDays[now.getDay()];
-            const kurdMonth = kurdishMonths[now.getMonth()];
-            const kurdDate = `${now.getDate()}ی ${kurdMonth}ی ${kurdYear}`;
-            document.getElementById('kurdishDateFull').textContent = kurdDate;
-            document.getElementById('kurdishDayName').textContent = kurdDay;
+            // Clock
+            document.getElementById('megaClock').textContent = `${h}:${m}:${s}`;
 
             // Gregorian
-            const greg = now.toLocaleDateString('ku-TR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
-            document.getElementById('gregorianDate').textContent = greg;
+            const gregDay = now.getDate();
+            const gregMonth = now.toLocaleDateString('ku-TR', { month: 'long' });
+            const gregYear = now.getFullYear();
+            document.getElementById('gregorianDate').innerHTML = 
+                `<span class="highlight">${gregDay}</span>ی ${gregMonth}ی ${gregYear}`;
+
+            // Kurdish (KRG)
+            const kurdYear = gregYear + 700;
+            const kurdDay = kurdishDays[now.getDay()];
+            const kurdMonth = kurdishMonths[now.getMonth()];
+            document.getElementById('kurdishDate').innerHTML = 
+                `${kurdDay} | <span class="highlight">${now.getDate()}</span>ی ${kurdMonth}ی ${kurdYear}`;
 
             // Hijri
-            document.getElementById('hijriDate').textContent = toHijri(now);
+            const hijri = toHijri(now);
+            document.getElementById('hijriDate').innerHTML = 
+                `<span class="highlight">${hijri.day}</span>ی ${hijri.month}ی ${hijri.year}ی هەتاوی`;
         }
 
-        initPlayer();
-        updateClock();
-        setInterval(updateClock, 1000);
+        // Fetch Weather
+        async function fetchWeather(lat, lon, cityId) {
+            try {
+                const res = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true`);
+                const data = await res.json();
+                const w = data.current_weather;
 
-        document.addEventListener('keydown', (e) => {
-            if (e.code === 'Space') { e.preventDefault(); togglePlay(); }
+                document.getElementById(`${cityId}-temp`).textContent = `${Math.round(w.temperature)}°C`;
+                document.getElementById(`${cityId}-icon`).textContent = weatherIcons[w.weathercode] || '🌡';
+                document.getElementById(`${cityId}-desc`).textContent = weatherDescs[w.weathercode] || '---';
+            } catch (e) {
+                document.getElementById(`${cityId}-temp`).textContent = '--°';
+                document.getElementById(`${cityId}-desc`).textContent = 'نەتوانرا';
+            }
+        }
+
+        // Update all weather
+        function updateAllWeather() {
+            fetchWeather(36.1911, 44.0092, 'hawler');    // Erbil
+            fetchWeather(35.5575, 45.4350, 'slemani');   // Sulaymaniyah
+            fetchWeather(36.8679, 42.9989, 'duhok');     // Duhok
+            fetchWeather(35.4669, 44.3929, 'kirkuk');    // Kirkuk
+            fetchWeather(35.1778, 45.9861, 'halabja');   // Halabja
+        }
+
+        // Volume display update
+        const audio = document.getElementById('audioPlayer');
+        audio.addEventListener('volumechange', () => {
+            document.getElementById('volDisplay').textContent = Math.round(audio.volume * 100) + '%';
         });
+
+        // Stream status
+        audio.addEventListener('play', () => {
+            document.getElementById('streamStatus').textContent = '🔴 Playing';
+            document.getElementById('streamStatus').style.color = '#ff4444';
+        });
+        audio.addEventListener('pause', () => {
+            document.getElementById('streamStatus').textContent = '⏸ Paused';
+            document.getElementById('streamStatus').style.color = '#ffd700';
+        });
+
+        // Initialize
+        updateDateTime();
+        updateAllWeather();
+        setInterval(updateDateTime, 1000);      // Clock every second
+        setInterval(updateAllWeather, 600000);  // Weather every 10 minutes
     </script>
 </body>
 </html>
