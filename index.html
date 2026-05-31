@@ -698,10 +698,10 @@
             const kurdYear = gregYear + 700;
             const kurdDay = kurdishDays[now.getDay()];
             const kurdMonth = kurdishMonths[now.getMonth()];
-            currentDateValues.kurdish = `${kurdDay} | <span class="highlight">${now.getDate()}</span>ی ${kurdMonth}ی ${kurdYear}`;
+            currentDateValues.kurdish = `${kurdDay} | <span class="highlight">${now.getDate()}</span> ${kurdMonth} ${kurdYear}`;
 
             const hijri = toHijri(now);
-            currentDateValues.hijri = `<span class="highlight">${hijri.day}</span> ${hijri.month} ${hijri.year} `;
+            currentDateValues.hijri = `<span class="highlight">${hijri.day}</span> ${hijri.month} ${hijri.} `;
 
             // Update current visible date if needed
             const fmt = dateFormats[currentDateIndex === 0 ? 2 : currentDateIndex - 1];
@@ -746,7 +746,7 @@
         updateDateTime();
         updateAllWeather();
         setInterval(updateDateTime, 1000);
-        setInterval(updateAllWeather, 600000);
+        setInterval(updateAllWeather, 300000);
         setInterval(cycleCity, 5000);
         setInterval(cycleDate, 5000);
         setTimeout(cycleCity, 1000);
