@@ -701,7 +701,7 @@
             currentDateValues.kurdish = `${kurdDay} | <span class="highlight">${now.getDate()}</span>ی ${kurdMonth}ی ${kurdYear}`;
 
             const hijri = toHijri(now);
-            currentDateValues.hijri = `<span class="highlight">${hijri.day}</span>ی ${hijri.month}ی ${hijri.year}`;
+            currentDateValues.hijri = `<span class="highlight">${hijri}</span>ی ${hijri.month}ی ${hijri.year}`;
 
             // Update current visible date if needed
             const fmt = dateFormats[currentDateIndex === 0 ? 2 : currentDateIndex - 1];
