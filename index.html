@@ -693,9 +693,9 @@
             const gregDay = now.getDate();
             const gregMonth = now.toLocaleDateString('ku-TR',{month:'long'});
             const gregYear = now.getFullYear();
-            currentDateValues.gregorian = `<span class="highlight">${gregDay}</span>ی ${gregMonth}ی ${gregYear}`;
+            currentDateValues.gregorian = `<span class="highlight">${gregDay}</span>/ ${gregMonth}/ ${gregYear}`;
 
-            const kurdYear = gregYear + 700;
+            const kurdYear = gregYear + 000;
             const kurdDay = kurdishDays[now.getDay()];
             const kurdMonth = kurdishMonths[now.getMonth()];
             currentDateValues.kurdish = `${kurdDay} | <span class="highlight">${now.getDate()}</span> ${kurdMonth} ${kurdYear}`;
