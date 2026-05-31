@@ -695,7 +695,7 @@
             const gregYear = now.getFullYear();
             currentDateValues.gregorian = `<span class="highlight">${gregDay}</span>/ ${gregMonth}/ ${gregYear}`;
 
-            const kurdYear = gregYear + 000;
+            const kurdYear = gregYear + 700;
             const kurdDay = kurdishDays[now.getDay()];
             const kurdMonth = kurdishMonths[now.getMonth()];
             currentDateValues.kurdish = `${kurdDay} | <span class="highlight">${now.getDate()}</span> ${kurdMonth} ${kurdYear}`;
