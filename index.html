@@ -701,7 +701,7 @@
             currentDateValues.kurdish = `${kurdDay} | <span class="highlight">${now.getDate()}</span>ی ${kurdMonth}ی ${kurdYear}`;
 
             const hijri = toHijri(now);
-            currentDateValues.hijri = `<span class="highlight">${hijri.day}</span>ی ${hijri.month}ی ${hijri.year}ی هەتاوی`;
+            currentDateValues.hijri = `<span class="highlight">${hijri.day}</span>ی ${hijri.month}ی ${hijri.year}`;
 
             // Update current visible date if needed
             const fmt = dateFormats[currentDateIndex === 0 ? 2 : currentDateIndex - 1];
@@ -746,7 +746,7 @@
         updateDateTime();
         updateAllWeather();
         setInterval(updateDateTime, 1000);
-        setInterval(updateAllWeather, 600000);
+        setInterval(updateAllWeather, 300000);
         setInterval(cycleCity, 5000);
         setInterval(cycleDate, 5000);
         setTimeout(cycleCity, 1000);
