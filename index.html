@@ -701,7 +701,7 @@
             currentDateValues.kurdish = `${kurdDay} | <span class="highlight">${now.getDate()}</span>ی ${kurdMonth}ی ${kurdYear}`;
 
             const hijri = toHijri(now);
-            currentDateValues.hijri =`<span class="highlight">${hijri.day}</span>ی ${hijri.month}ی ${hijri.year}`;
+            currentDateValues.hijri = `<span class="highlight">${hijri.day}</span>ی ${hijri.month}ی ${hijri.year}ی هەتاوی`;
 
             // Update current visible date if needed
             const fmt = dateFormats[currentDateIndex === 0 ? 2 : currentDateIndex - 1];
@@ -743,19 +743,14 @@
             document.getElementById('streamStatus').style.color = '#ffd700';
         });
 
-        // جێبەجێکردنی کارەکان بەپێی کاتی نوێ
-    updateDateTime();
-    updateAllWeather();
-    
-    // کاتژمێر هەر 1 چرکە نوێ دەبێتەوە
-    setInterval(updateDateTime, 1000);
-    
-    // کەشوهەوا ئێستا هەر 5 خولەک جارێک نوێ دەبێتەوە (300000 میلی چرکە)
-    setInterval(updateAllWeather, 300000);
-    
-    // گۆڕینی شارەکان هەر 5 چرکە جارێک
-    setInterval(cycleCity, 5000);
-    setTimeout(cycleCity, 1000);
+        updateDateTime();
+        updateAllWeather();
+        setInterval(updateDateTime, 1000);
+        setInterval(updateAllWeather, 600000);
+        setInterval(cycleCity, 5000);
+        setInterval(cycleDate, 5000);
+        setTimeout(cycleCity, 1000);
+        setTimeout(cycleDate, 1500);
     </script>
 </body>
 </html>
