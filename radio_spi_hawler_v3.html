@@ -1,0 +1,1208 @@
+<!DOCTYPE html>
+<html lang="ku" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Radio Spi Hawler - ڕادیۆی سپی هەولێر</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&family=Tajawal:wght@400;700;900&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+    <style>
+        :root {
+            --k-red: #da251d;
+            --k-yellow: #ffd700;
+            --k-green: #009639;
+            --glass: rgba(255, 255, 255, 0.03);
+            --glass-border: rgba(255, 255, 255, 0.08);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Cairo', 'Tajawal', sans-serif;
+            background: #050510;
+            min-height: 100vh;
+            color: #fff;
+            overflow-x: hidden;
+        }
+
+        .bg-layers {
+            position: fixed;
+            inset: 0;
+            z-index: -1;
+            overflow: hidden;
+        }
+        .bg-layers::before {
+            content: '';
+            position: absolute;
+            inset: -50%;
+            background: 
+                radial-gradient(circle at 20% 50%, rgba(218,37,29,0.15) 0%, transparent 50%),
+                radial-gradient(circle at 80% 50%, rgba(255,215,0,0.1) 0%, transparent 50%),
+                radial-gradient(circle at 50% 100%, rgba(0,150,57,0.1) 0%, transparent 50%);
+            animation: bgRotate 30s linear infinite;
+        }
+        @keyframes bgRotate {
+            0% { transform: rotate(0deg) scale(1.5); }
+            100% { transform: rotate(360deg) scale(1.5); }
+        }
+
+        .particles {
+            position: fixed;
+            inset: 0;
+            z-index: -1;
+            pointer-events: none;
+        }
+        .particles span {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: rgba(255,215,0,0.3);
+            border-radius: 50%;
+            animation: particleFloat 15s infinite;
+            box-shadow: 0 0 10px rgba(255,215,0,0.5);
+        }
+        .particles span:nth-child(1) { left: 10%; top: 20%; animation-delay: 0s; }
+        .particles span:nth-child(2) { left: 30%; top: 60%; animation-delay: 2s; background: rgba(218,37,29,0.3); box-shadow: 0 0 10px rgba(218,37,29,0.5); }
+        .particles span:nth-child(3) { left: 50%; top: 30%; animation-delay: 4s; background: rgba(0,150,57,0.3); box-shadow: 0 0 10px rgba(0,150,57,0.5); }
+        .particles span:nth-child(4) { left: 70%; top: 80%; animation-delay: 6s; }
+        .particles span:nth-child(5) { left: 90%; top: 40%; animation-delay: 8s; background: rgba(218,37,29,0.3); }
+        @keyframes particleFloat {
+            0%, 100% { transform: translateY(0) translateX(0); opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { transform: translateY(-100vh) translateX(50px); opacity: 0; }
+        }
+
+        .top-bar {
+            background: linear-gradient(180deg, rgba(15,23,42,0.95) 0%, rgba(15,23,42,0.8) 100%);
+            backdrop-filter: blur(30px);
+            border-bottom: 1px solid rgba(255,215,0,0.15);
+            padding: 20px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+        }
+        .top-bar::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--k-red), var(--k-yellow), var(--k-green), var(--k-yellow), var(--k-red), transparent);
+            background-size: 200% auto;
+            animation: shimmer 3s linear infinite;
+        }
+        @keyframes shimmer {
+            0% { background-position: 200% center; }
+            100% { background-position: -200% center; }
+        }
+
+        .weather-single {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            background: var(--glass);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            padding: 16px 28px;
+            min-width: 320px;
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+        .weather-single::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,215,0,0.05), transparent);
+            transition: left 0.5s;
+        }
+        .weather-single:hover::before { left: 100%; }
+        .weather-single:hover {
+            border-color: rgba(255,215,0,0.3);
+            box-shadow: 0 0 40px rgba(255,215,0,0.1), 0 10px 30px rgba(0,0,0,0.3);
+            transform: translateY(-2px);
+        }
+
+        .weather-city-name {
+            font-size: 1.4em;
+            font-weight: 900;
+            color: var(--k-yellow);
+            text-shadow: 0 0 20px rgba(255,215,0,0.4);
+            min-width: 90px;
+            transition: all 0.5s ease;
+            letter-spacing: 1px;
+        }
+
+        .weather-icon-single {
+            font-size: 3.2em;
+            filter: drop-shadow(0 0 20px rgba(255,215,0,0.5));
+            animation: iconFloat 4s ease-in-out infinite;
+            transition: all 0.5s ease;
+        }
+        @keyframes iconFloat {
+            0%, 100% { transform: translateY(0) scale(1) rotate(0deg); }
+            25% { transform: translateY(-10px) scale(1.1) rotate(3deg); }
+            75% { transform: translateY(-5px) scale(1.05) rotate(-2deg); }
+        }
+
+        .weather-info {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 4px;
+        }
+        .weather-temp-single {
+            font-size: 2.2em;
+            font-weight: 900;
+            color: #fff;
+            text-shadow: 0 0 30px rgba(255,215,0,0.6);
+            line-height: 1;
+            background: linear-gradient(to bottom, #fff, var(--k-yellow));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .weather-desc-single {
+            font-size: 0.9em;
+            color: rgba(255,255,255,0.6);
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        .city-dots {
+            display: flex;
+            gap: 8px;
+            margin-top: 10px;
+        }
+        .city-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.15);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+            position: relative;
+        }
+        .city-dot::after {
+            content: '';
+            position: absolute;
+            inset: -4px;
+            border-radius: 50%;
+            border: 1px solid transparent;
+            transition: all 0.4s;
+        }
+        .city-dot.active {
+            background: var(--k-yellow);
+            box-shadow: 0 0 15px rgba(255,215,0,0.8), 0 0 30px rgba(255,215,0,0.3);
+            transform: scale(1.2);
+        }
+        .city-dot.active::after { border-color: rgba(255,215,0,0.4); }
+        .city-dot:hover:not(.active) {
+            background: rgba(255,255,255,0.3);
+            transform: scale(1.1);
+        }
+
+        .clock-section {
+            text-align: left;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 12px;
+        }
+        .mega-clock {
+            font-size: 3.5em;
+            font-weight: 900;
+            font-family: 'Courier New', monospace;
+            letter-spacing: 4px;
+            line-height: 1;
+            background: linear-gradient(to bottom, #fff 0%, #fff 50%, var(--k-yellow) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            filter: drop-shadow(0 0 25px rgba(255,215,0,0.5));
+            animation: clockGlow 3s ease-in-out infinite;
+        }
+        @keyframes clockGlow {
+            0%, 100% { filter: drop-shadow(0 0 25px rgba(255,215,0,0.5)); }
+            50% { filter: drop-shadow(0 0 40px rgba(255,215,0,0.8)) drop-shadow(0 0 60px rgba(255,215,0,0.3)); }
+        }
+
+        .date-single {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            background: var(--glass);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 14px 24px;
+            min-width: 280px;
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+        .date-single::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(0,150,57,0.05), transparent);
+            transition: left 0.5s;
+        }
+        .date-single:hover::before { left: 100%; }
+        .date-single:hover {
+            border-color: rgba(0,150,57,0.3);
+            box-shadow: 0 0 40px rgba(0,150,57,0.1), 0 10px 30px rgba(0,0,0,0.3);
+            transform: translateY(-2px);
+        }
+
+        .date-icon-single {
+            font-size: 2.4em;
+            filter: drop-shadow(0 0 15px rgba(255,215,0,0.4));
+            animation: dateIconFloat 3s ease-in-out infinite;
+            transition: all 0.5s ease;
+            min-width: 50px;
+            text-align: center;
+        }
+        @keyframes dateIconFloat {
+            0%, 100% { transform: translateY(0) scale(1); }
+            50% { transform: translateY(-6px) scale(1.1); }
+        }
+
+        .date-info {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 2px;
+        }
+        .date-label-text {
+            font-size: 0.8em;
+            color: rgba(255,255,255,0.5);
+            font-weight: 600;
+            letter-spacing: 1px;
+            transition: all 0.5s ease;
+        }
+        .date-value-text {
+            font-size: 1.15em;
+            font-weight: 900;
+            color: #fff;
+            letter-spacing: 0.5px;
+            transition: all 0.5s ease;
+        }
+        .date-value-text .highlight {
+            color: var(--k-yellow);
+            text-shadow: 0 0 10px rgba(255,215,0,0.3);
+        }
+
+        .date-dots {
+            display: flex;
+            gap: 8px;
+            margin-top: 8px;
+        }
+        .date-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.15);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+        }
+        .date-dot.active {
+            background: var(--k-green);
+            box-shadow: 0 0 12px rgba(0,150,57,0.8), 0 0 25px rgba(0,150,57,0.3);
+            transform: scale(1.2);
+        }
+        .date-dot:hover:not(.active) {
+            background: rgba(255,255,255,0.3);
+            transform: scale(1.1);
+        }
+
+        .main-content {
+            padding: 40px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .player-area {
+            background: var(--glass);
+            backdrop-filter: blur(20px);
+            border-radius: 30px;
+            border: 1px solid var(--glass-border);
+            padding: 40px;
+            margin-top: 30px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.05);
+        }
+        .player-area::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--k-red), var(--k-yellow), var(--k-green), var(--k-yellow), var(--k-red));
+            background-size: 200% auto;
+            animation: shimmer 3s linear infinite;
+        }
+        .player-area::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,215,0,0.03) 0%, transparent 70%);
+            animation: rotateSlow 20s linear infinite;
+            pointer-events: none;
+        }
+        @keyframes rotateSlow {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .player-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 25px;
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+            position: relative;
+            z-index: 1;
+        }
+        .player-title {
+            font-size: 2em;
+            font-weight: 900;
+            background: linear-gradient(90deg, #fff, var(--k-yellow), #fff);
+            background-size: 200% auto;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: textShine 5s linear infinite;
+            letter-spacing: 2px;
+        }
+        @keyframes textShine {
+            0% { background-position: 200% center; }
+            100% { background-position: -200% center; }
+        }
+        .badge {
+            background: linear-gradient(135deg, var(--k-red), var(--k-yellow));
+            color: #000;
+            padding: 10px 24px;
+            border-radius: 30px;
+            font-weight: 900;
+            font-size: 1em;
+            letter-spacing: 2px;
+            animation: badgePulse 2s ease-in-out infinite;
+            box-shadow: 0 0 30px rgba(255,215,0,0.3);
+            position: relative;
+            overflow: hidden;
+        }
+        .badge::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(255,255,255,0.3), transparent);
+            animation: badgeShine 3s linear infinite;
+        }
+        @keyframes badgeShine {
+            0% { transform: translateX(-100%) translateY(-100%); }
+            100% { transform: translateX(100%) translateY(100%); }
+        }
+        @keyframes badgePulse {
+            0%, 100% { box-shadow: 0 0 20px rgba(255,215,0,0.3); transform: scale(1); }
+            50% { box-shadow: 0 0 40px rgba(255,215,0,0.6); transform: scale(1.05); }
+        }
+
+        .stream-selector {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+            position: relative;
+            z-index: 1;
+        }
+        .stream-btn {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            color: rgba(255,255,255,0.7);
+            padding: 12px 24px;
+            border-radius: 16px;
+            cursor: pointer;
+            font-family: 'Cairo', sans-serif;
+            font-weight: 700;
+            font-size: 1em;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .stream-btn:hover {
+            background: rgba(255,255,255,0.1);
+            border-color: rgba(255,215,0,0.3);
+            transform: translateY(-2px);
+        }
+        .stream-btn.active {
+            background: linear-gradient(135deg, rgba(218,37,29,0.3), rgba(255,215,0,0.2));
+            border-color: var(--k-yellow);
+            color: #fff;
+            box-shadow: 0 0 20px rgba(255,215,0,0.2);
+        }
+        .stream-btn .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #444;
+            transition: all 0.3s;
+        }
+        .stream-btn.active .status-dot {
+            background: #00ff88;
+            box-shadow: 0 0 10px #00ff88;
+        }
+        .stream-btn.error .status-dot {
+            background: #ff4444;
+            box-shadow: 0 0 10px #ff4444;
+        }
+        .stream-btn.http .status-dot {
+            background: #ffaa00;
+            box-shadow: 0 0 10px #ffaa00;
+        }
+        .stream-btn.checking .status-dot {
+            background: var(--k-yellow);
+            animation: dotPulse 1s infinite;
+        }
+        @keyframes dotPulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+
+        .audio-wrapper {
+            position: relative;
+            z-index: 1;
+            background: rgba(0,0,0,0.3);
+            border-radius: 20px;
+            padding: 20px;
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+        audio {
+            width: 100%;
+            opacity: 0.9;
+            border-radius: 10px;
+        }
+        audio::-webkit-media-controls-panel {
+            background: rgba(20,20,30,0.9);
+        }
+        audio::-webkit-media-controls-current-time-display,
+        audio::-webkit-media-controls-time-remaining-display {
+            color: var(--k-yellow);
+        }
+
+        .error-box {
+            background: rgba(218,37,29,0.1);
+            border: 1px solid rgba(218,37,29,0.3);
+            border-radius: 16px;
+            padding: 20px;
+            margin: 15px 0;
+            color: #ff8888;
+            font-size: 0.95em;
+            line-height: 1.6;
+            display: none;
+            position: relative;
+            z-index: 1;
+        }
+        .error-box.show { display: block; }
+        .error-box .retry-btn {
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.2);
+            color: #fff;
+            padding: 8px 20px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-family: 'Cairo', sans-serif;
+            font-weight: 700;
+            margin-top: 10px;
+            transition: all 0.3s;
+        }
+        .error-box .retry-btn:hover {
+            background: rgba(255,255,255,0.2);
+            border-color: var(--k-yellow);
+        }
+
+        .status-bar {
+            display: flex;
+            gap: 30px;
+            margin-top: 30px;
+            padding: 20px 25px;
+            background: rgba(255,255,255,0.02);
+            border-radius: 20px;
+            border: 1px solid rgba(255,255,255,0.05);
+            position: relative;
+            z-index: 1;
+            flex-wrap: wrap;
+        }
+        .status-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1em;
+            color: rgba(255,255,255,0.5);
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        .status-item:hover {
+            color: rgba(255,255,255,0.8);
+            transform: translateY(-2px);
+        }
+        .status-item .value {
+            color: var(--k-yellow);
+            font-weight: 900;
+            text-shadow: 0 0 10px rgba(255,215,0,0.3);
+        }
+        .status-item .value.error {
+            color: #ff4444;
+            text-shadow: 0 0 10px rgba(255,68,68,0.3);
+        }
+        .status-item .value.success {
+            color: #00ff88;
+            text-shadow: 0 0 10px rgba(0,255,136,0.3);
+        }
+        .status-item .value.warning {
+            color: #ffaa00;
+            text-shadow: 0 0 10px rgba(255,170,0,0.3);
+        }
+
+        .visualizer {
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            gap: 4px;
+            height: 40px;
+            margin: 20px 0;
+            position: relative;
+            z-index: 1;
+        }
+        .visualizer-bar {
+            width: 6px;
+            background: linear-gradient(to top, var(--k-red), var(--k-yellow));
+            border-radius: 3px;
+            transition: height 0.1s ease;
+            opacity: 0.6;
+        }
+
+        .http-warning {
+            background: rgba(255,170,0,0.08);
+            border: 1px solid rgba(255,170,0,0.2);
+            border-radius: 12px;
+            padding: 12px 16px;
+            margin-bottom: 15px;
+            font-size: 0.85em;
+            color: #ffcc66;
+            display: none;
+            position: relative;
+            z-index: 1;
+        }
+        .http-warning.show { display: block; }
+
+        @media (max-width: 900px) {
+            .top-bar { flex-direction: column; gap: 25px; padding: 20px; }
+            .clock-section { align-items: center; }
+            .mega-clock { font-size: 2.5em; }
+            .weather-single { min-width: 280px; padding: 14px 22px; }
+            .date-single { min-width: 260px; padding: 12px 20px; }
+            .main-content { padding: 20px; }
+            .player-area { padding: 25px; }
+            .player-title { font-size: 1.5em; }
+            .stream-selector { justify-content: center; }
+        }
+        @media (max-width: 600px) {
+            .mega-clock { font-size: 2em; letter-spacing: 2px; }
+            .weather-single { min-width: 240px; padding: 12px 18px; }
+            .weather-icon-single { font-size: 2.5em; }
+            .weather-temp-single { font-size: 1.8em; }
+            .weather-city-name { font-size: 1.1em; }
+            .date-single { min-width: 220px; padding: 10px 16px; }
+            .date-icon-single { font-size: 2em; }
+            .date-value-text { font-size: 1em; }
+            .player-title { font-size: 1.2em; }
+            .status-bar { flex-wrap: wrap; gap: 15px; }
+            .stream-btn { padding: 10px 16px; font-size: 0.9em; }
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-layers"></div>
+    <div class="particles">
+        <span></span><span></span><span></span><span></span><span></span>
+    </div>
+
+    <div class="top-bar">
+        <div class="weather-single" id="weatherSingle">
+            <div class="weather-city-name" id="singleCity">هەولێر</div>
+            <div class="weather-icon-single" id="singleIcon">☀️</div>
+            <div class="weather-info">
+                <div class="weather-temp-single" id="singleTemp">--°</div>
+                <div class="weather-desc-single" id="singleDesc">...</div>
+                <div class="city-dots" id="cityDots">
+                    <div class="city-dot active" data-index="0"></div>
+                    <div class="city-dot" data-index="1"></div>
+                    <div class="city-dot" data-index="2"></div>
+                    <div class="city-dot" data-index="3"></div>
+                    <div class="city-dot" data-index="4"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="clock-section">
+            <div class="mega-clock" id="megaClock">00:00:00</div>
+
+            <div class="date-single" id="dateSingle">
+                <div class="date-icon-single" id="dateIcon">📅</div>
+                <div class="date-info">
+                    <div class="date-label-text" id="dateLabel">میلادی</div>
+                    <div class="date-value-text" id="dateValue">...</div>
+                    <div class="date-dots" id="dateDots">
+                        <div class="date-dot active" data-index="0"></div>
+                        <div class="date-dot" data-index="1"></div>
+                        <div class="date-dot" data-index="2"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="main-content">
+        <div class="player-area">
+            <div class="player-header">
+                <div class="player-title">📻 Radio Spi Hawler - ڕادیۆی سپی هەولێر</div>
+                <div class="badge">LIVE</div>
+            </div>
+
+            <div class="stream-selector" id="streamSelector">
+                <button class="stream-btn active" data-stream="0" onclick="switchStream(0)">
+                    <span class="status-dot"></span>
+                    <span>Stream 1 (HTTPS)</span>
+                </button>
+                <button class="stream-btn http" data-stream="1" onclick="switchStream(1)">
+                    <span class="status-dot"></span>
+                    <span>Stream 2 (HTTP)</span>
+                </button>
+            </div>
+
+            <div class="http-warning" id="httpWarning">
+                ⚠️ ئەم ستریمە HTTPـیە. ئەگەر ئەم پەڕەیە لە HTTPS (ماڵپەڕی ئەمن) کراوەبێت، بڕاوسەر ڕێگا نادات.<br>
+                چارەسەر: Stream 1 بەکاربێنە، یان پەڕەکە لە ڕێگەی localhost/HTTP بکەرەوە.
+            </div>
+
+            <div class="error-box" id="errorBox">
+                <div id="errorText"></div>
+                <button class="retry-btn" onclick="retryCurrentStream()">🔄 هەوڵدانەوە</button>
+                <button class="retry-btn" onclick="switchStream(0)" id="fallbackBtn" style="margin-right: 10px;">📡 گۆڕین بۆ Stream 1</button>
+            </div>
+
+            <div class="audio-wrapper">
+                <div class="visualizer" id="visualizer">
+                    <div class="visualizer-bar" style="height: 5px;"></div>
+                    <div class="visualizer-bar" style="height: 5px;"></div>
+                    <div class="visualizer-bar" style="height: 5px;"></div>
+                    <div class="visualizer-bar" style="height: 5px;"></div>
+                    <div class="visualizer-bar" style="height: 5px;"></div>
+                    <div class="visualizer-bar" style="height: 5px;"></div>
+                    <div class="visualizer-bar" style="height: 5px;"></div>
+                    <div class="visualizer-bar" style="height: 5px;"></div>
+                    <div class="visualizer-bar" style="height: 5px;"></div>
+                    <div class="visualizer-bar" style="height: 5px;"></div>
+                    <div class="visualizer-bar" style="height: 5px;"></div>
+                    <div class="visualizer-bar" style="height: 5px;"></div>
+                </div>
+                <audio id="audioPlayer" controls preload="none"></audio>
+            </div>
+
+            <div class="status-bar">
+                <div class="status-item"><span>📡</span><span>دۆخ: <span class="value" id="streamStatus">چاوەڕێ</span></span></div>
+                <div class="status-item"><span>🎵</span><span>بەرزی دەنگ: <span class="value" id="volDisplay">80%</span></span></div>
+                <div class="status-item"><span>📊</span><span>لایڤ: <span class="value" id="streamName">RADIO SPI HAWLER</span></span></div>
+                <div class="status-item"><span>🔗</span><span>جۆری ستریم: <span class="value" id="streamType">HLS</span></span></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ===== Stream Configuration =====
+        const streams = [
+            {
+                name: 'StreamBrothers',
+                url: 'https://media2.streambrothers.com:1936/8218/8218/chunklist_w1622172701.m3u8',
+                type: 'hls',
+                protocol: 'https'
+            },
+            {
+                name: 'Listen2Radio',
+                // Original: http://admin:radiospihawler@uk17freenew.listen2myradio.com:23549/live/radiospihawler2025/m3u8
+                // Browsers block credentials in URL since 2021
+                // Also block HTTP on HTTPS pages (mixed content)
+                url: 'http://uk17freenew.listen2myradio.com:23549/live/radiospihawler2025/m3u8',
+                type: 'hls',
+                protocol: 'http',
+                needsAuth: true
+            }
+        ];
+
+        // ===== Kurdish Data =====
+        const kurdishMonths = ['خاکەلێوە','گوڵان','جۆزەردان','پووشپەڕ','گەلاوێژ','خەرمانان','ڕەزبەر','گەڵاڕێزان','سەرەوە','بەفرانبار','ڕێبەندان','ڕەشەمێ'];
+        const kurdishDays = ['یەکشەممە','دووشەممە','سێشەممە','چوارشەممە','پێنجشەممە','هەینی','شەممە'];
+        const hijriMonths = ['محرم','صفر','ربيع الأول','ربيع الثاني','جمادى الأولى','جمادى الآخرة','رجب','شعبان','رمضان','شوال','ذو القعدة','ذو الحجة'];
+
+        const weatherIcons = {
+            0:'☀️',1:'🌤',2:'⛅',3:'☁️',45:'🌫',48:'🌫',51:'🌦',53:'🌧',55:'🌧',
+            61:'🌧',63:'🌧',65:'🌧',71:'🌨',73:'🌨',75:'🌨',80:'🌧',81:'🌧',82:'🌧',95:'⛈',96:'⛈',99:'⛈'
+        };
+        const weatherDescs = {
+            0:'ئاسمان ڕۆشن',1:'سەرەکی ڕۆشن',2:'هەندێک هەور',3:'هەورە',45:'تەڕە',48:'تەڕە',
+            51:'بارانێکی کەم',53:'باران',55:'بارانی زۆر',61:'بارانێکی کەم',63:'باران',65:'بارانی زۆر',
+            71:'بەفر',73:'بەفر',75:'بەفر',80:'باران',81:'باران',82:'بارانی زۆر',95:'هەورەگرمە',96:'هەورەگرمە',99:'هەورەگرمە'
+        };
+
+        const cities = [
+            {name:'هەولێر',id:'hawler',lat:36.1911,lon:44.0092},
+            {name:'سلێمانی',id:'slemani',lat:35.5575,lon:45.4350},
+            {name:'دهۆک',id:'duhok',lat:36.8679,lon:42.9989},
+            {name:'کەرکووک',id:'kirkuk',lat:35.4669,lon:44.3929},
+            {name:'هەڵەبجە',id:'halabja',lat:35.1778,lon:45.9861}
+        ];
+
+        const dateFormats = [
+            {icon:'📅', label:'میلادی', key:'gregorian'},
+            {icon:'☀️', label:'کوردی', key:'kurdish'},
+            {icon:'🌙', label:'هیجری', key:'hijri'}
+        ];
+
+        // ===== State =====
+        let cityData = {};
+        let currentCityIndex = 0;
+        let currentDateIndex = 0;
+        let currentDateValues = {};
+        let currentStreamIndex = 0;
+        let hls = null;
+        let visualizerInterval = null;
+        let retryCount = 0;
+        const MAX_RETRIES = 3;
+
+        // ===== DOM Elements =====
+        const audio = document.getElementById('audioPlayer');
+        const streamStatus = document.getElementById('streamStatus');
+        const streamName = document.getElementById('streamName');
+        const streamType = document.getElementById('streamType');
+        const errorBox = document.getElementById('errorBox');
+        const errorText = document.getElementById('errorText');
+        const fallbackBtn = document.getElementById('fallbackBtn');
+        const httpWarning = document.getElementById('httpWarning');
+
+        function showError(msg, showFallback = true) {
+            errorText.innerHTML = msg;
+            errorBox.classList.add('show');
+            fallbackBtn.style.display = showFallback ? 'inline-block' : 'none';
+        }
+
+        function hideError() {
+            errorBox.classList.remove('show');
+        }
+
+        function updateStreamBtnState(index, state) {
+            const btn = document.querySelector(`[data-stream="${index}"]`);
+            btn.classList.remove('checking', 'error', 'active', 'http');
+            if (state === 'checking') btn.classList.add('checking');
+            else if (state === 'error') btn.classList.add('error');
+            else if (state === 'active') btn.classList.add('active');
+            else if (state === 'http') btn.classList.add('http');
+        }
+
+        // ===== Check if page is HTTPS =====
+        function isPageHTTPS() {
+            return window.location.protocol === 'https:';
+        }
+
+        // ===== HLS Loader =====
+        function initHLS(url, streamIndex) {
+            return new Promise((resolve, reject) => {
+                if (hls) {
+                    hls.destroy();
+                    hls = null;
+                }
+
+                const stream = streams[streamIndex];
+                let loaded = false;
+                let timeoutId;
+
+                timeoutId = setTimeout(() => {
+                    if (!loaded) {
+                        reject(new Error('Timeout - ستریمەکە وەڵام نەدایەوە'));
+                    }
+                }, 15000);
+
+                if (Hls.isSupported()) {
+                    const hlsConfig = {
+                        debug: false,
+                        enableWorker: true,
+                        lowLatencyMode: true,
+                        backBufferLength: 90,
+                        manifestLoadingTimeOut: 10000,
+                        manifestLoadingMaxRetry: 2,
+                        levelLoadingTimeOut: 10000,
+                        levelLoadingMaxRetry: 2
+                    };
+
+                    hls = new Hls(hlsConfig);
+
+                    hls.loadSource(url);
+                    hls.attachMedia(audio);
+
+                    hls.on(Hls.Events.MANIFEST_PARSED, function() {
+                        clearTimeout(timeoutId);
+                        loaded = true;
+                        resolve();
+                    });
+
+                    hls.on(Hls.Events.ERROR, function(event, data) {
+                        if (data.fatal) {
+                            clearTimeout(timeoutId);
+                            if (!loaded) {
+                                reject(new Error(`HLS Error: ${data.type} - ${data.details}`));
+                            }
+
+                            switch(data.type) {
+                                case Hls.ErrorTypes.NETWORK_ERROR:
+                                    console.log('Network error, trying to recover...');
+                                    hls.startLoad();
+                                    break;
+                                case Hls.ErrorTypes.MEDIA_ERROR:
+                                    console.log('Media error, trying to recover...');
+                                    hls.recoverMediaError();
+                                    break;
+                            }
+                        }
+                    });
+
+                    streamType.textContent = 'HLS (hls.js)';
+                } else if (audio.canPlayType('application/vnd.apple.mpegurl')) {
+                    clearTimeout(timeoutId);
+                    audio.src = url;
+                    audio.addEventListener('loadedmetadata', function onLoaded() {
+                        audio.removeEventListener('loadedmetadata', onLoaded);
+                        loaded = true;
+                        resolve();
+                    });
+                    audio.addEventListener('error', function onError(e) {
+                        audio.removeEventListener('error', onError);
+                        reject(new Error('Native HLS error'));
+                    });
+                    streamType.textContent = 'HLS (Native)';
+                } else {
+                    clearTimeout(timeoutId);
+                    reject(new Error('بڕاوسەرەکەت HLS پشتگیری ناکات'));
+                }
+            });
+        }
+
+        async function switchStream(index) {
+            currentStreamIndex = index;
+            retryCount = 0;
+            const stream = streams[index];
+
+            // Update UI
+            document.querySelectorAll('.stream-btn').forEach((btn, idx) => {
+                btn.classList.remove('active', 'error', 'checking');
+                if (idx === index) btn.classList.add('checking');
+                else if (streams[idx].protocol === 'http') btn.classList.add('http');
+            });
+
+            streamName.textContent = stream.name;
+            streamStatus.textContent = '⏳ بارکردن...';
+            streamStatus.className = 'value warning';
+            hideError();
+            httpWarning.classList.remove('show');
+
+            // Stop current
+            audio.pause();
+
+            // Check for HTTP on HTTPS page
+            if (stream.protocol === 'http' && isPageHTTPS()) {
+                updateStreamBtnState(index, 'error');
+                streamStatus.textContent = '❌ بلۆککراوە';
+                streamStatus.className = 'value error';
+                httpWarning.classList.add('show');
+                showError(
+                    `<strong>⚠️ Mixed Content Blocked</strong><br><br>` +
+                    `ئەم پەڕەیە لە HTTPS کراوە، بەڵام ستریمەکە HTTPـیە.<br>` +
+                    `بڕاوسەرەکان (Chrome, Firefox, Edge) ڕێگا نادەن بە بارکردنی HTTP لەسەر HTTPS.<br><br>` +
+                    `<strong>چارەسەرەکان:</strong><br>` +
+                    `1. ✅ <strong>Stream 1 (HTTPS)</strong> بەکاربێنە<br>` +
+                    `2. 🖥️ پەڕەکە لە ڕێگەی <strong>localhost</strong> یان <strong>HTTP</strong> بکەرەوە<br>` +
+                    `3. 🔧 پەیوەندی بە بەڕێوەبەری ڕادیۆکە بکە بۆ HTTPS`,
+                    true
+                );
+                return;
+            }
+
+            try {
+                await initHLS(stream.url, index);
+
+                updateStreamBtnState(index, 'active');
+                streamStatus.textContent = '✅ ئامادەیە';
+                streamStatus.className = 'value success';
+
+                try {
+                    await audio.play();
+                } catch(e) {
+                    streamStatus.textContent = '▶️ کرتە لە Play بکە';
+                }
+            } catch (err) {
+                console.error('Stream failed:', err);
+
+                updateStreamBtnState(index, 'error');
+                streamStatus.textContent = '❌ هەڵە';
+                streamStatus.className = 'value error';
+
+                let errorMsg = `<strong>❌ Stream ${index + 1} کار ناکات</strong><br><br>`;
+
+                if (stream.needsAuth) {
+                    errorMsg += `ئەم ستریمە پێویستی بە دڵنیاکردنەوەی بەکارهێنەر هەیە.<br>`;
+                    errorMsg += `لە کۆدی کۆنەکەتدا: <code>admin:radiospihawler@...</code><br><br>`;
+                    errorMsg += `🛡️ <strong>بڕاوسەرە نوێیەکان credentials لە ناو URL ڕێگا نادەن</strong>.<br>`;
+                    errorMsg += `چارەسەر: Stream 1 بەکاربێنە.`;
+                } else if (err.message.includes('network') || err.message.includes('NETWORK')) {
+                    errorMsg += `کێشەی Network: CORS یان Mixed Content.<br>`;
+                    errorMsg += `چارەسەر: Stream 1 بەکاربێنە.`;
+                } else {
+                    errorMsg += `هۆکار: ${err.message}<br>`;
+                    errorMsg += `لینک: <code style="font-size:0.8em">${stream.url}</code>`;
+                }
+
+                showError(errorMsg, index !== 0);
+            }
+        }
+
+        function retryCurrentStream() {
+            retryCount++;
+            if (retryCount <= MAX_RETRIES) {
+                switchStream(currentStreamIndex);
+            } else {
+                showError('<strong>زۆر هەوڵدرا</strong><br>تکایە Stream 1 بەکاربێنە.', true);
+            }
+        }
+
+        // ===== Visualizer =====
+        function startVisualizer() {
+            if (visualizerInterval) clearInterval(visualizerInterval);
+            const bars = document.querySelectorAll('.visualizer-bar');
+            visualizerInterval = setInterval(() => {
+                bars.forEach(bar => {
+                    const height = Math.random() * 30 + 5;
+                    bar.style.height = height + 'px';
+                });
+            }, 100);
+        }
+
+        function stopVisualizer() {
+            if (visualizerInterval) clearInterval(visualizerInterval);
+            const bars = document.querySelectorAll('.visualizer-bar');
+            bars.forEach(bar => {
+                bar.style.height = '5px';
+            });
+        }
+
+        audio.addEventListener('play', () => {
+            streamStatus.textContent = '🔴 لایڤ';
+            streamStatus.className = 'value success';
+            startVisualizer();
+        });
+
+        audio.addEventListener('pause', () => {
+            streamStatus.textContent = '⏸ وەستا';
+            streamStatus.className = 'value';
+            stopVisualizer();
+        });
+
+        audio.addEventListener('volumechange', () => {
+            document.getElementById('volDisplay').textContent = Math.round(audio.volume * 100) + '%';
+        });
+
+        audio.addEventListener('waiting', () => {
+            streamStatus.textContent = '⏳ چاوەڕێ...';
+            streamStatus.className = 'value warning';
+        });
+
+        audio.addEventListener('stalled', () => {
+            streamStatus.textContent = '⚠️ هێنانەوە...';
+            streamStatus.className = 'value warning';
+        });
+
+        // ===== Weather =====
+        async function fetchWeather(lat, lon, cityId) {
+            try {
+                const res = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true`);
+                if (!res.ok) throw new Error('Network response was not ok');
+                const data = await res.json();
+                const w = data.current_weather;
+                cityData[cityId] = {
+                    temp: Math.round(w.temperature),
+                    desc: weatherDescs[w.weathercode] || '---',
+                    icon: weatherIcons[w.weathercode] || '☀️'
+                };
+            } catch (e) {
+                cityData[cityId] = {temp:'--',desc:'نەتوانرا',icon:'☀️'};
+            }
+        }
+
+        function updateAllWeather() {
+            cities.forEach(c => fetchWeather(c.lat, c.lon, c.id));
+        }
+
+        function cycleCity() {
+            const city = cities[currentCityIndex];
+            const data = cityData[city.id] || {temp:'--',desc:'...',icon:'☀️'};
+            const cityEl = document.getElementById('singleCity');
+            const iconEl = document.getElementById('singleIcon');
+            const tempEl = document.getElementById('singleTemp');
+            const descEl = document.getElementById('singleDesc');
+
+            cityEl.style.opacity = '0';
+            iconEl.style.opacity = '0';
+            tempEl.style.opacity = '0';
+            descEl.style.opacity = '0';
+            cityEl.style.transform = 'translateX(20px)';
+
+            setTimeout(() => {
+                cityEl.textContent = city.name;
+                iconEl.textContent = data.icon;
+                tempEl.textContent = data.temp + '°';
+                descEl.textContent = data.desc;
+                document.querySelectorAll('.city-dot').forEach((dot,idx) => {
+                    dot.classList.toggle('active', idx === currentCityIndex);
+                });
+                cityEl.style.opacity = '1';
+                iconEl.style.opacity = '1';
+                tempEl.style.opacity = '1';
+                descEl.style.opacity = '1';
+                cityEl.style.transform = 'translateX(0)';
+            }, 300);
+
+            currentCityIndex = (currentCityIndex + 1) % cities.length;
+        }
+
+        // ===== Date & Time =====
+        function toHijri(gregDate) {
+            const d = gregDate.getDate();
+            const m = gregDate.getMonth() + 1;
+            const y = gregDate.getFullYear();
+
+            const jd = Math.floor((1461 * (y + 4800 + Math.floor((m - 14) / 12))) / 4) +
+                      Math.floor((367 * (m - 2 - 12 * Math.floor((m - 14) / 12))) / 12) -
+                      Math.floor((3 * Math.floor((y + 4900 + Math.floor((m - 14) / 12)) / 100)) / 4) +
+                      d - 32075;
+
+            const l = jd - 1948440 + 10632;
+            const n = Math.floor((l - 1) / 10631);
+            let j = l - 10631 * n + 354;
+            const jy = Math.floor((10985 - j) / 5316) * Math.floor((50 * j) / 17719) + 
+                       Math.floor(j / 5670) * Math.floor((43 * j) / 15238);
+            j = j - Math.floor((30 - jy) / 15) * Math.floor((17719 * jy) / 50) - 
+                Math.floor(jy / 16) * Math.floor((15238 * jy) / 43) + 29;
+            const jm = Math.floor((24 * j) / 709);
+            const jd2 = j - Math.floor((709 * jm) / 24);
+
+            return {
+                day: Math.floor(jd2),
+                month: hijriMonths[Math.min(Math.max(jm - 1, 0), 11)],
+                year: Math.floor(30 * n + jy - 30)
+            };
+        }
+
+        function updateDateTime() {
+            const now = new Date();
+            const h = String(now.getHours()).padStart(2,'0');
+            const m = String(now.getMinutes()).padStart(2,'0');
+            const s = String(now.getSeconds()).padStart(2,'0');
+            document.getElementById('megaClock').textContent = `${h}:${m}:${s}`;
+
+            const gregDay = now.getDate();
+            const gregMonth = now.toLocaleDateString('ku-TR',{month:'long'});
+            const gregYear = now.getFullYear();
+            currentDateValues.gregorian = `<span class="highlight">${gregDay}</span> ${gregMonth} ${gregYear}`;
+
+            const kurdYear = gregYear + 700;
+            const kurdDay = kurdishDays[now.getDay()];
+            const kurdMonth = kurdishMonths[now.getMonth()];
+            currentDateValues.kurdish = `${kurdDay} | <span class="highlight">${now.getDate()}</span> ${kurdMonth} ${kurdYear}`;
+
+            const hijri = toHijri(now);
+            currentDateValues.hijri = `<span class="highlight">${hijri.day}</span> ${hijri.month} ${hijri.year}`;
+
+            const visibleIndex = currentDateIndex === 0 ? 0 : currentDateIndex - 1;
+            const fmt = dateFormats[visibleIndex];
+            const valueEl = document.getElementById('dateValue');
+            if (valueEl.innerHTML === '...' || valueEl.innerHTML.includes('undefined')) {
+                valueEl.innerHTML = currentDateValues[fmt.key];
+            }
+        }
+
+        function cycleDate() {
+            const fmt = dateFormats[currentDateIndex];
+            const iconEl = document.getElementById('dateIcon');
+            const labelEl = document.getElementById('dateLabel');
+            const valueEl = document.getElementById('dateValue');
+
+            iconEl.style.opacity = '0';
+            iconEl.style.transform = 'scale(0.5) rotate(-20deg)';
+            labelEl.style.opacity = '0';
+            valueEl.style.opacity = '0';
+            valueEl.style.transform = 'translateY(10px)';
+
+            setTimeout(() => {
+                iconEl.textContent = fmt.icon;
+                labelEl.textContent = fmt.label;
+                valueEl.innerHTML = currentDateValues[fmt.key] || '...';
+
+                document.querySelectorAll('.date-dot').forEach((dot,idx) => {
+                    dot.classList.toggle('active', idx === currentDateIndex);
+                });
+
+                iconEl.style.opacity = '1';
+                iconEl.style.transform = 'scale(1) rotate(0deg)';
+                labelEl.style.opacity = '1';
+                valueEl.style.opacity = '1';
+                valueEl.style.transform = 'translateY(0)';
+            }, 300);
+
+            currentDateIndex = (currentDateIndex + 1) % dateFormats.length;
+        }
+
+        // ===== Initialization =====
+        document.addEventListener('DOMContentLoaded', () => {
+            updateDateTime();
+            updateAllWeather();
+            switchStream(0); // Start with Stream 1 (HTTPS)
+
+            setInterval(updateDateTime, 1000);
+            setInterval(updateAllWeather, 300000);
+            setInterval(cycleCity, 5000);
+            setInterval(cycleDate, 5000);
+            setTimeout(cycleCity, 1000);
+            setTimeout(cycleDate, 1500);
+        });
+    </script>
+</body>
+</html>
