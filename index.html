@@ -2,10 +2,16 @@
 <html lang="ku" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Radio Sunnat Slemany -ڕادیۆی سوننه ت سلێمانى</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="description" content="ڕادیۆی سوننەتی سلێمانی - گوێ لە ستریمی ڕاستەوخۆی ڕادیۆکە بگرە">
+    <meta name="theme-color" content="#050510">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>Radio Sunnat Slemany - ڕادیۆی سوننەتی سلێمانی</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&family=Tajawal:wght@400;700;900&display=swap" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@1.5.0"></script>
     <style>
         :root {
             --k-red: #da251d;
@@ -13,9 +19,13 @@
             --k-green: #009639;
             --glass: rgba(255, 255, 255, 0.03);
             --glass-border: rgba(255, 255, 255, 0.08);
+            --radius: 24px;
+            --transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        html { scroll-behavior: smooth; }
 
         body {
             font-family: 'Cairo', 'Tajawal', sans-serif;
@@ -23,8 +33,19 @@
             min-height: 100vh;
             color: #fff;
             overflow-x: hidden;
+            -webkit-tap-highlight-color: transparent;
         }
 
+        /* Reduced motion support */
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+
+        /* Background */
         .bg-layers {
             position: fixed;
             inset: 0;
@@ -36,16 +57,17 @@
             position: absolute;
             inset: -50%;
             background: 
-                radial-gradient(circle at 20% 50%, rgba(218,37,29,0.15) 0%, transparent 50%),
-                radial-gradient(circle at 80% 50%, rgba(255,215,0,0.1) 0%, transparent 50%),
-                radial-gradient(circle at 50% 100%, rgba(0,150,57,0.1) 0%, transparent 50%);
-            animation: bgRotate 30s linear infinite;
+                radial-gradient(circle at 20% 50%, rgba(218,37,29,0.12) 0%, transparent 50%),
+                radial-gradient(circle at 80% 50%, rgba(255,215,0,0.08) 0%, transparent 50%),
+                radial-gradient(circle at 50% 100%, rgba(0,150,57,0.08) 0%, transparent 50%);
+            animation: bgRotate 40s linear infinite;
         }
         @keyframes bgRotate {
             0% { transform: rotate(0deg) scale(1.5); }
             100% { transform: rotate(360deg) scale(1.5); }
         }
 
+        /* Particles */
         .particles {
             position: fixed;
             inset: 0;
@@ -56,16 +78,16 @@
             position: absolute;
             width: 4px;
             height: 4px;
-            background: rgba(255,215,0,0.3);
+            background: rgba(255,215,0,0.25);
             border-radius: 50%;
-            animation: particleFloat 15s infinite;
-            box-shadow: 0 0 10px rgba(255,215,0,0.5);
+            animation: particleFloat 20s infinite;
+            box-shadow: 0 0 10px rgba(255,215,0,0.4);
         }
         .particles span:nth-child(1) { left: 10%; top: 20%; animation-delay: 0s; }
-        .particles span:nth-child(2) { left: 30%; top: 60%; animation-delay: 2s; background: rgba(218,37,29,0.3); box-shadow: 0 0 10px rgba(218,37,29,0.5); }
-        .particles span:nth-child(3) { left: 50%; top: 30%; animation-delay: 4s; background: rgba(0,150,57,0.3); box-shadow: 0 0 10px rgba(0,150,57,0.5); }
-        .particles span:nth-child(4) { left: 70%; top: 80%; animation-delay: 6s; }
-        .particles span:nth-child(5) { left: 90%; top: 40%; animation-delay: 8s; background: rgba(218,37,29,0.3); }
+        .particles span:nth-child(2) { left: 30%; top: 60%; animation-delay: 4s; background: rgba(218,37,29,0.25); box-shadow: 0 0 10px rgba(218,37,29,0.4); }
+        .particles span:nth-child(3) { left: 50%; top: 30%; animation-delay: 8s; background: rgba(0,150,57,0.25); box-shadow: 0 0 10px rgba(0,150,57,0.4); }
+        .particles span:nth-child(4) { left: 70%; top: 80%; animation-delay: 12s; }
+        .particles span:nth-child(5) { left: 90%; top: 40%; animation-delay: 16s; background: rgba(218,37,29,0.25); }
         @keyframes particleFloat {
             0%, 100% { transform: translateY(0) translateX(0); opacity: 0; }
             10% { opacity: 1; }
@@ -73,9 +95,11 @@
             100% { transform: translateY(-100vh) translateX(50px); opacity: 0; }
         }
 
+        /* Top Bar */
         .top-bar {
             background: linear-gradient(180deg, rgba(15,23,42,0.95) 0%, rgba(15,23,42,0.8) 100%);
             backdrop-filter: blur(30px);
+            -webkit-backdrop-filter: blur(30px);
             border-bottom: 1px solid rgba(255,215,0,0.15);
             padding: 20px 40px;
             display: flex;
@@ -83,6 +107,7 @@
             align-items: center;
             position: relative;
             box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+            gap: 20px;
         }
         .top-bar::after {
             content: '';
@@ -100,17 +125,19 @@
             100% { background-position: -200% center; }
         }
 
+        /* Weather Card */
         .weather-single {
             display: flex;
             align-items: center;
             gap: 20px;
             background: var(--glass);
             backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
             border: 1px solid var(--glass-border);
-            border-radius: 24px;
+            border-radius: var(--radius);
             padding: 16px 28px;
             min-width: 320px;
-            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: var(--transition);
             position: relative;
             overflow: hidden;
         }
@@ -122,7 +149,7 @@
             width: 100%;
             height: 100%;
             background: linear-gradient(90deg, transparent, rgba(255,215,0,0.05), transparent);
-            transition: left 0.5s;
+            transition: left 0.6s;
         }
         .weather-single:hover::before { left: 100%; }
         .weather-single:hover {
@@ -176,6 +203,16 @@
             font-weight: 600;
             letter-spacing: 0.5px;
         }
+        .weather-loading {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid rgba(255,215,0,0.3);
+            border-top-color: var(--k-yellow);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
 
         .city-dots {
             display: flex;
@@ -210,6 +247,7 @@
             transform: scale(1.1);
         }
 
+        /* Clock Section */
         .clock-section {
             text-align: left;
             display: flex;
@@ -229,6 +267,8 @@
             background-clip: text;
             filter: drop-shadow(0 0 25px rgba(255,215,0,0.5));
             animation: clockGlow 3s ease-in-out infinite;
+            direction: ltr;
+            display: inline-block;
         }
         @keyframes clockGlow {
             0%, 100% { filter: drop-shadow(0 0 25px rgba(255,215,0,0.5)); }
@@ -241,11 +281,12 @@
             gap: 15px;
             background: var(--glass);
             backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
             border: 1px solid var(--glass-border);
-            border-radius: 20px;
+            border-radius: var(--radius);
             padding: 14px 24px;
             min-width: 280px;
-            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: var(--transition);
             position: relative;
             overflow: hidden;
         }
@@ -257,7 +298,7 @@
             width: 100%;
             height: 100%;
             background: linear-gradient(90deg, transparent, rgba(0,150,57,0.05), transparent);
-            transition: left 0.5s;
+            transition: left 0.6s;
         }
         .date-single:hover::before { left: 100%; }
         .date-single:hover {
@@ -327,15 +368,18 @@
             transform: scale(1.1);
         }
 
+        /* Main Content */
         .main-content {
             padding: 40px;
             max-width: 1400px;
             margin: 0 auto;
         }
 
+        /* Player Area */
         .player-area {
             background: var(--glass);
             backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
             border-radius: 30px;
             border: 1px solid var(--glass-border);
             padding: 40px;
@@ -363,7 +407,7 @@
             width: 200%;
             height: 200%;
             background: radial-gradient(circle, rgba(255,215,0,0.03) 0%, transparent 70%);
-            animation: rotateSlow 20s linear infinite;
+            animation: rotateSlow 25s linear infinite;
             pointer-events: none;
         }
         @keyframes rotateSlow {
@@ -380,6 +424,8 @@
             border-bottom: 1px solid rgba(255,255,255,0.08);
             position: relative;
             z-index: 1;
+            gap: 15px;
+            flex-wrap: wrap;
         }
         .player-title {
             font-size: 2em;
@@ -408,6 +454,7 @@
             box-shadow: 0 0 30px rgba(255,215,0,0.3);
             position: relative;
             overflow: hidden;
+            flex-shrink: 0;
         }
         .badge::before {
             content: '';
@@ -428,6 +475,7 @@
             50% { box-shadow: 0 0 40px rgba(255,215,0,0.6); transform: scale(1.05); }
         }
 
+        /* Stream Selector */
         .stream-selector {
             display: flex;
             gap: 15px;
@@ -450,6 +498,8 @@
             display: flex;
             align-items: center;
             gap: 10px;
+            position: relative;
+            overflow: hidden;
         }
         .stream-btn:hover {
             background: rgba(255,255,255,0.1);
@@ -468,6 +518,7 @@
             border-radius: 50%;
             background: #444;
             transition: all 0.3s;
+            flex-shrink: 0;
         }
         .stream-btn.active .status-dot {
             background: #00ff88;
@@ -486,10 +537,11 @@
             animation: dotPulse 1s infinite;
         }
         @keyframes dotPulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.3; }
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.3; transform: scale(0.8); }
         }
 
+        /* Audio Wrapper */
         .audio-wrapper {
             position: relative;
             z-index: 1;
@@ -498,19 +550,104 @@
             padding: 20px;
             border: 1px solid rgba(255,255,255,0.05);
         }
-        audio {
+
+        /* Custom Controls */
+        .custom-controls {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-top: 15px;
+            flex-wrap: wrap;
+        }
+        .play-btn {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            border: none;
+            background: linear-gradient(135deg, var(--k-red), var(--k-yellow));
+            color: #000;
+            font-size: 1.4em;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 20px rgba(255,215,0,0.3);
+            flex-shrink: 0;
+        }
+        .play-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 30px rgba(255,215,0,0.5);
+        }
+        .play-btn:active { transform: scale(0.95); }
+
+        .volume-control {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex: 1;
+            min-width: 150px;
+        }
+        .volume-slider {
+            -webkit-appearance: none;
+            appearance: none;
             width: 100%;
-            opacity: 0.9;
-            border-radius: 10px;
+            height: 6px;
+            border-radius: 3px;
+            background: rgba(255,255,255,0.1);
+            outline: none;
+            cursor: pointer;
         }
-        audio::-webkit-media-controls-panel {
-            background: rgba(20,20,30,0.9);
+        .volume-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: var(--k-yellow);
+            box-shadow: 0 0 10px rgba(255,215,0,0.5);
+            cursor: pointer;
+            transition: transform 0.2s;
         }
-        audio::-webkit-media-controls-current-time-display,
-        audio::-webkit-media-controls-time-remaining-display {
-            color: var(--k-yellow);
+        .volume-slider::-webkit-slider-thumb:hover { transform: scale(1.2); }
+        .volume-slider::-moz-range-thumb {
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: var(--k-yellow);
+            box-shadow: 0 0 10px rgba(255,215,0,0.5);
+            cursor: pointer;
+            border: none;
+        }
+        .volume-icon {
+            font-size: 1.3em;
+            cursor: pointer;
+            transition: transform 0.2s;
+            flex-shrink: 0;
+        }
+        .volume-icon:hover { transform: scale(1.2); }
+
+        /* Visualizer */
+        .visualizer {
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            gap: 4px;
+            height: 50px;
+            margin: 20px 0;
+            position: relative;
+            z-index: 1;
+        }
+        .visualizer-bar {
+            width: 6px;
+            background: linear-gradient(to top, var(--k-red), var(--k-yellow));
+            border-radius: 3px;
+            transition: height 0.05s ease;
+            opacity: 0.7;
+            min-height: 3px;
         }
 
+        /* Error & Warning Boxes */
         .error-box {
             background: rgba(218,37,29,0.1);
             border: 1px solid rgba(218,37,29,0.3);
@@ -524,7 +661,8 @@
             position: relative;
             z-index: 1;
         }
-        .error-box.show { display: block; }
+        .error-box.show { display: block; animation: fadeIn 0.3s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
         .error-box .retry-btn {
             background: rgba(255,255,255,0.1);
             border: 1px solid rgba(255,255,255,0.2);
@@ -535,6 +673,7 @@
             font-family: 'Cairo', sans-serif;
             font-weight: 700;
             margin-top: 10px;
+            margin-left: 8px;
             transition: all 0.3s;
         }
         .error-box .retry-btn:hover {
@@ -542,6 +681,21 @@
             border-color: var(--k-yellow);
         }
 
+        .http-warning {
+            background: rgba(255,170,0,0.08);
+            border: 1px solid rgba(255,170,0,0.2);
+            border-radius: 12px;
+            padding: 12px 16px;
+            margin-bottom: 15px;
+            font-size: 0.85em;
+            color: #ffcc66;
+            display: none;
+            position: relative;
+            z-index: 1;
+        }
+        .http-warning.show { display: block; animation: fadeIn 0.3s ease; }
+
+        /* Status Bar */
         .status-bar {
             display: flex;
             gap: 30px;
@@ -585,65 +739,77 @@
             text-shadow: 0 0 10px rgba(255,170,0,0.3);
         }
 
-        .visualizer {
-            display: flex;
-            align-items: flex-end;
-            justify-content: center;
-            gap: 4px;
-            height: 40px;
-            margin: 20px 0;
-            position: relative;
-            z-index: 1;
+        /* Network Status */
+        .network-status {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%) translateY(-60px);
+            background: rgba(218,37,29,0.9);
+            color: #fff;
+            padding: 10px 24px;
+            border-radius: 30px;
+            font-weight: 700;
+            font-size: 0.9em;
+            z-index: 1000;
+            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
         }
-        .visualizer-bar {
-            width: 6px;
-            background: linear-gradient(to top, var(--k-red), var(--k-yellow));
-            border-radius: 3px;
-            transition: height 0.1s ease;
-            opacity: 0.6;
+        .network-status.show {
+            transform: translateX(-50%) translateY(0);
         }
 
-        .http-warning {
-            background: rgba(255,170,0,0.08);
-            border: 1px solid rgba(255,170,0,0.2);
-            border-radius: 12px;
-            padding: 12px 16px;
-            margin-bottom: 15px;
-            font-size: 0.85em;
-            color: #ffcc66;
-            display: none;
-            position: relative;
-            z-index: 1;
+        /* Keyboard hint */
+        .keyboard-hint {
+            text-align: center;
+            margin-top: 20px;
+            color: rgba(255,255,255,0.25);
+            font-size: 0.8em;
+            letter-spacing: 1px;
         }
-        .http-warning.show { display: block; }
+        .keyboard-hint kbd {
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.15);
+            border-radius: 6px;
+            padding: 2px 8px;
+            font-family: inherit;
+            font-size: 0.9em;
+        }
 
+        /* Responsive */
         @media (max-width: 900px) {
-            .top-bar { flex-direction: column; gap: 25px; padding: 20px; }
+            .top-bar { flex-direction: column; gap: 25px; padding: 20px; align-items: stretch; }
             .clock-section { align-items: center; }
             .mega-clock { font-size: 2.5em; }
-            .weather-single { min-width: 280px; padding: 14px 22px; }
-            .date-single { min-width: 260px; padding: 12px 20px; }
+            .weather-single { min-width: unset; width: 100%; padding: 14px 22px; }
+            .date-single { min-width: unset; width: 100%; padding: 12px 20px; }
             .main-content { padding: 20px; }
             .player-area { padding: 25px; }
             .player-title { font-size: 1.5em; }
             .stream-selector { justify-content: center; }
+            .status-bar { justify-content: center; }
         }
         @media (max-width: 600px) {
             .mega-clock { font-size: 2em; letter-spacing: 2px; }
-            .weather-single { min-width: 240px; padding: 12px 18px; }
+            .weather-single { padding: 12px 18px; }
             .weather-icon-single { font-size: 2.5em; }
             .weather-temp-single { font-size: 1.8em; }
             .weather-city-name { font-size: 1.1em; }
-            .date-single { min-width: 220px; padding: 10px 16px; }
+            .date-single { padding: 10px 16px; }
             .date-icon-single { font-size: 2em; }
             .date-value-text { font-size: 1em; }
             .player-title { font-size: 1.2em; }
-            .status-bar { flex-wrap: wrap; gap: 15px; }
+            .status-bar { gap: 15px; }
             .stream-btn { padding: 10px 16px; font-size: 0.9em; }
+            .custom-controls { justify-content: center; }
         }
     </style>
+<base target="_blank">
 </head>
 <body>
+    <div class="network-status" id="networkStatus">⚠️ پەیوەندی ئینتەرنێت بەربەستکراوە</div>
+
     <div class="bg-layers"></div>
     <div class="particles">
         <span></span><span></span><span></span><span></span><span></span>
@@ -652,22 +818,22 @@
     <div class="top-bar">
         <div class="weather-single" id="weatherSingle">
             <div class="weather-city-name" id="singleCity">هەولێر</div>
-            <div class="weather-icon-single" id="singleIcon">☀️</div>
+            <div class="weather-icon-single" id="singleIcon"><span class="weather-loading"></span></div>
             <div class="weather-info">
                 <div class="weather-temp-single" id="singleTemp">--°</div>
-                <div class="weather-desc-single" id="singleDesc">...</div>
+                <div class="weather-desc-single" id="singleDesc">بارکردن...</div>
                 <div class="city-dots" id="cityDots">
-                    <div class="city-dot active" data-index="0"></div>
-                    <div class="city-dot" data-index="1"></div>
-                    <div class="city-dot" data-index="2"></div>
-                    <div class="city-dot" data-index="3"></div>
-                    <div class="city-dot" data-index="4"></div>
+                    <div class="city-dot active" data-index="0" role="button" aria-label="هەولێر"></div>
+                    <div class="city-dot" data-index="1" role="button" aria-label="سلێمانی"></div>
+                    <div class="city-dot" data-index="2" role="button" aria-label="دهۆک"></div>
+                    <div class="city-dot" data-index="3" role="button" aria-label="کەرکووک"></div>
+                    <div class="city-dot" data-index="4" role="button" aria-label="هەڵەبجە"></div>
                 </div>
             </div>
         </div>
 
         <div class="clock-section">
-            <div class="mega-clock" id="megaClock">00:00:00</div>
+            <div class="mega-clock" id="megaClock" role="timer" aria-live="off">00:00:00</div>
 
             <div class="date-single" id="dateSingle">
                 <div class="date-icon-single" id="dateIcon">📅</div>
@@ -675,9 +841,9 @@
                     <div class="date-label-text" id="dateLabel">میلادی</div>
                     <div class="date-value-text" id="dateValue">...</div>
                     <div class="date-dots" id="dateDots">
-                        <div class="date-dot active" data-index="0"></div>
-                        <div class="date-dot" data-index="1"></div>
-                        <div class="date-dot" data-index="2"></div>
+                        <div class="date-dot active" data-index="0" role="button" aria-label="میلادی"></div>
+                        <div class="date-dot" data-index="1" role="button" aria-label="کوردی"></div>
+                        <div class="date-dot" data-index="2" role="button" aria-label="هیجری"></div>
                     </div>
                 </div>
             </div>
@@ -687,55 +853,67 @@
     <div class="main-content">
         <div class="player-area">
             <div class="player-header">
-                <div class="player-title">📻 Radio Sunnat Slemany- ڕادیۆی سوننه سلێمانى</div>
-                <div class="badge">LIVE</div>
+                <div class="player-title">📻 Radio Sunnat Slemany</div>
+                <div class="badge" aria-label="لایڤ">LIVE</div>
             </div>
 
-            <div class="stream-selector" id="streamSelector">
-                <button class="stream-btn active" data-stream="0" onclick="switchStream(0)">
-                    <span class="status-dot"></span>
+            <div class="stream-selector" id="streamSelector" role="tablist" aria-label="هەڵبژاردنی ستریم">
+                <button class="stream-btn active" data-stream="0" onclick="switchStream(0)" role="tab" aria-selected="true" aria-label="ستریمی یەکەم">
+                    <span class="status-dot" aria-hidden="true"></span>
                     <span>Stream 1 (HTTPS)</span>
                 </button>
-                <button class="stream-btn http" data-stream="1" onclick="switchStream(1)">
-                    <span class="status-dot"></span>
-                    <span>Stream 2 (HTTP)</span>
+                <button class="stream-btn http" data-stream="1" onclick="switchStream(1)" role="tab" aria-selected="false" aria-label="ستریمی دووەم">
+                    <span class="status-dot" aria-hidden="true"></span>
+                    <span>Stream 2</span>
                 </button>
             </div>
 
-            <div class="http-warning" id="httpWarning">
-                ⚠️ ئەم ستریمە HTTPـیە. ئەگەر ئەم پەڕەیە لە HTTPS (ماڵپەڕی ئەمن) کراوەبێت، بڕاوسەر ڕێگا نادات.<br>
-                چارەسەر: Stream 1 بەکاربێنە، یان پەڕەکە لە ڕێگەی localhost/HTTP بکەرەوە.
+            <div class="http-warning" id="httpWarning" role="alert">
+                ⚠️ ئەم ستریمە لەسەر HTTPS کێشەی Mixed Content هەیە. تکایە Stream 1 بەکاربێنە.
             </div>
 
-            <div class="error-box" id="errorBox">
+            <div class="error-box" id="errorBox" role="alert">
                 <div id="errorText"></div>
                 <button class="retry-btn" onclick="retryCurrentStream()">🔄 هەوڵدانەوە</button>
                 <button class="retry-btn" onclick="switchStream(0)" id="fallbackBtn" style="margin-right: 10px;">📡 گۆڕین بۆ Stream 1</button>
             </div>
 
             <div class="audio-wrapper">
-                <div class="visualizer" id="visualizer">
-                    <div class="visualizer-bar" style="height: 5px;"></div>
-                    <div class="visualizer-bar" style="height: 5px;"></div>
-                    <div class="visualizer-bar" style="height: 5px;"></div>
-                    <div class="visualizer-bar" style="height: 5px;"></div>
-                    <div class="visualizer-bar" style="height: 5px;"></div>
-                    <div class="visualizer-bar" style="height: 5px;"></div>
-                    <div class="visualizer-bar" style="height: 5px;"></div>
-                    <div class="visualizer-bar" style="height: 5px;"></div>
-                    <div class="visualizer-bar" style="height: 5px;"></div>
-                    <div class="visualizer-bar" style="height: 5px;"></div>
-                    <div class="visualizer-bar" style="height: 5px;"></div>
-                    <div class="visualizer-bar" style="height: 5px;"></div>
+                <div class="visualizer" id="visualizer" aria-hidden="true">
+                    <div class="visualizer-bar" style="height: 3px;"></div>
+                    <div class="visualizer-bar" style="height: 3px;"></div>
+                    <div class="visualizer-bar" style="height: 3px;"></div>
+                    <div class="visualizer-bar" style="height: 3px;"></div>
+                    <div class="visualizer-bar" style="height: 3px;"></div>
+                    <div class="visualizer-bar" style="height: 3px;"></div>
+                    <div class="visualizer-bar" style="height: 3px;"></div>
+                    <div class="visualizer-bar" style="height: 3px;"></div>
+                    <div class="visualizer-bar" style="height: 3px;"></div>
+                    <div class="visualizer-bar" style="height: 3px;"></div>
+                    <div class="visualizer-bar" style="height: 3px;"></div>
+                    <div class="visualizer-bar" style="height: 3px;"></div>
                 </div>
-                <audio id="audioPlayer" controls preload="none"></audio>
+
+                <audio id="audioPlayer" preload="none" crossorigin="anonymous"></audio>
+
+                <div class="custom-controls">
+                    <button class="play-btn" id="playBtn" onclick="togglePlay()" aria-label="لەگێڕان/وەستان">▶️</button>
+                    <div class="volume-control">
+                        <span class="volume-icon" id="volumeIcon" onclick="toggleMute()" role="button" aria-label="بێدەنگ/دەنگدار">🔊</span>
+                        <input type="range" class="volume-slider" id="volumeSlider" min="0" max="100" value="80" aria-label="بەرزی دەنگ" oninput="setVolume(this.value)">
+                    </div>
+                </div>
             </div>
 
             <div class="status-bar">
                 <div class="status-item"><span>📡</span><span>دۆخ: <span class="value" id="streamStatus">چاوەڕێ</span></span></div>
                 <div class="status-item"><span>🎵</span><span>بەرزی دەنگ: <span class="value" id="volDisplay">80%</span></span></div>
-                <div class="status-item"><span>📊</span><span>لایڤ: <span class="value" id="streamName">RADIO Sunnat Slemany</span></span></div>
-                <div class="status-item"><span>🔗</span><span>جۆری ستریم: <span class="value" id="streamType">HLS</span></span></div>
+                <div class="status-item"><span>📊</span><span>ستریم: <span class="value" id="streamName">RADIO Sunnat Slemany</span></span></div>
+                <div class="status-item"><span>🔗</span><span>جۆر: <span class="value" id="streamType">HLS</span></span></div>
+            </div>
+
+            <div class="keyboard-hint">
+                <kbd>Space</kbd> لەگێڕان/وەستان · <kbd>↑↓</kbd> بەرزی دەنگ · <kbd>1-2</kbd> گۆڕینی ستریم
             </div>
         </div>
     </div>
@@ -744,20 +922,16 @@
         // ===== Stream Configuration =====
         const streams = [
             {
-                name: 'StreamBrothers',
+                name: 'StreamBrothers (HTTPS)',
                 url: 'https://media2.streambrothers.com:1936/8218/8218/chunklist_w1622172701.m3u8',
                 type: 'hls',
                 protocol: 'https'
             },
             {
-                name: 'giatv/giatv-rsunnat',
-                // Original: https://live20.bozztv.com/giatv/giatv-rsunnat/rsunnat/chunks.m3u8
-                // Browsers block credentials in URL since 2021
-                // Also block HTTP on HTTPS pages (mixed content)
+                name: 'GiaTV (HTTPS)',
                 url: 'https://live20.bozztv.com/giatv/giatv-rsunnat/rsunnat/chunks.m3u8',
                 type: 'hls',
-                protocol: 'http',
-                needsAuth: true
+                protocol: 'https'
             }
         ];
 
@@ -800,9 +974,17 @@
         let visualizerInterval = null;
         let retryCount = 0;
         const MAX_RETRIES = 3;
+        let audioCtx = null;
+        let analyser = null;
+        let dataArray = null;
+        let source = null;
+        let isPlaying = false;
 
         // ===== DOM Elements =====
         const audio = document.getElementById('audioPlayer');
+        const playBtn = document.getElementById('playBtn');
+        const volumeSlider = document.getElementById('volumeSlider');
+        const volumeIcon = document.getElementById('volumeIcon');
         const streamStatus = document.getElementById('streamStatus');
         const streamName = document.getElementById('streamName');
         const streamType = document.getElementById('streamType');
@@ -810,46 +992,148 @@
         const errorText = document.getElementById('errorText');
         const fallbackBtn = document.getElementById('fallbackBtn');
         const httpWarning = document.getElementById('httpWarning');
+        const networkStatus = document.getElementById('networkStatus');
 
+        // ===== Helpers =====
         function showError(msg, showFallback = true) {
             errorText.innerHTML = msg;
             errorBox.classList.add('show');
             fallbackBtn.style.display = showFallback ? 'inline-block' : 'none';
         }
-
         function hideError() {
             errorBox.classList.remove('show');
         }
-
         function updateStreamBtnState(index, state) {
             const btn = document.querySelector(`[data-stream="${index}"]`);
+            if (!btn) return;
             btn.classList.remove('checking', 'error', 'active', 'http');
             if (state === 'checking') btn.classList.add('checking');
             else if (state === 'error') btn.classList.add('error');
             else if (state === 'active') btn.classList.add('active');
             else if (state === 'http') btn.classList.add('http');
+            btn.setAttribute('aria-selected', state === 'active' ? 'true' : 'false');
         }
 
-        // ===== Check if page is HTTPS =====
-        function isPageHTTPS() {
-            return window.location.protocol === 'https:';
+        // ===== Audio Context & Real Visualizer =====
+        function initAudioContext() {
+            if (audioCtx) return;
+            try {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                analyser = audioCtx.createAnalyser();
+                analyser.fftSize = 64;
+                analyser.smoothingTimeConstant = 0.8;
+                dataArray = new Uint8Array(analyser.frequencyBinCount);
+
+                if (!source) {
+                    source = audioCtx.createMediaElementSource(audio);
+                    source.connect(analyser);
+                    analyser.connect(audioCtx.destination);
+                }
+            } catch (e) {
+                console.warn('Web Audio API not available:', e);
+            }
+        }
+
+        function startRealVisualizer() {
+            if (!analyser) {
+                startFakeVisualizer();
+                return;
+            }
+            if (visualizerInterval) clearInterval(visualizerInterval);
+            const bars = document.querySelectorAll('.visualizer-bar');
+
+            function draw() {
+                if (!isPlaying) return;
+                analyser.getByteFrequencyData(dataArray);
+                const step = Math.floor(dataArray.length / bars.length);
+                bars.forEach((bar, i) => {
+                    const value = dataArray[i * step] || 0;
+                    const height = Math.max(3, (value / 255) * 45);
+                    bar.style.height = height + 'px';
+                    bar.style.opacity = 0.4 + (value / 255) * 0.6;
+                });
+                requestAnimationFrame(draw);
+            }
+            draw();
+        }
+
+        function startFakeVisualizer() {
+            if (visualizerInterval) clearInterval(visualizerInterval);
+            const bars = document.querySelectorAll('.visualizer-bar');
+            visualizerInterval = setInterval(() => {
+                bars.forEach(bar => {
+                    const height = Math.random() * 30 + 5;
+                    bar.style.height = height + 'px';
+                    bar.style.opacity = 0.6;
+                });
+            }, 100);
+        }
+
+        function stopVisualizer() {
+            if (visualizerInterval) {
+                clearInterval(visualizerInterval);
+                visualizerInterval = null;
+            }
+            const bars = document.querySelectorAll('.visualizer-bar');
+            bars.forEach(bar => {
+                bar.style.height = '3px';
+                bar.style.opacity = 0.3;
+            });
+        }
+
+        // ===== Play/Pause =====
+        function togglePlay() {
+            if (audio.paused) {
+                audio.play().catch(e => {
+                    console.warn('Play failed:', e);
+                    streamStatus.textContent = '▶️ کرتە لە Play بکە';
+                });
+            } else {
+                audio.pause();
+            }
+        }
+
+        function setVolume(val) {
+            const vol = parseInt(val) / 100;
+            audio.volume = vol;
+            document.getElementById('volDisplay').textContent = Math.round(vol * 100) + '%';
+            updateVolumeIcon(vol);
+        }
+
+        function toggleMute() {
+            audio.muted = !audio.muted;
+            updateVolumeIcon(audio.muted ? 0 : audio.volume);
+        }
+
+        function updateVolumeIcon(vol) {
+            if (vol === 0 || audio.muted) {
+                volumeIcon.textContent = '🔇';
+            } else if (vol < 0.5) {
+                volumeIcon.textContent = '🔉';
+            } else {
+                volumeIcon.textContent = '🔊';
+            }
         }
 
         // ===== HLS Loader =====
+        function resetAudio() {
+            audio.pause();
+            audio.removeAttribute('src');
+            audio.load();
+        }
+
         function initHLS(url, streamIndex) {
             return new Promise((resolve, reject) => {
                 if (hls) {
                     hls.destroy();
                     hls = null;
                 }
+                resetAudio();
 
-                const stream = streams[streamIndex];
                 let loaded = false;
-                let timeoutId;
-
-                timeoutId = setTimeout(() => {
+                let timeoutId = setTimeout(() => {
                     if (!loaded) {
-                        reject(new Error('Timeout - ستریمەکە وەڵام نەدایەوە'));
+                        reject(new Error('Timeout - ستریمەکە وەڵام نەدایەوە (15 چرکە)'));
                     }
                 }, 15000);
 
@@ -859,10 +1143,13 @@
                         enableWorker: true,
                         lowLatencyMode: true,
                         backBufferLength: 90,
-                        manifestLoadingTimeOut: 10000,
-                        manifestLoadingMaxRetry: 2,
-                        levelLoadingTimeOut: 10000,
-                        levelLoadingMaxRetry: 2
+                        manifestLoadingTimeOut: 12000,
+                        manifestLoadingMaxRetry: 1,
+                        levelLoadingTimeOut: 12000,
+                        levelLoadingMaxRetry: 1,
+                        xhrSetup: function(xhr) {
+                            xhr.withCredentials = false;
+                        }
                     };
 
                     hls = new Hls(hlsConfig);
@@ -882,15 +1169,15 @@
                             if (!loaded) {
                                 reject(new Error(`HLS Error: ${data.type} - ${data.details}`));
                             }
-
                             switch(data.type) {
                                 case Hls.ErrorTypes.NETWORK_ERROR:
-                                    console.log('Network error, trying to recover...');
                                     hls.startLoad();
                                     break;
                                 case Hls.ErrorTypes.MEDIA_ERROR:
-                                    console.log('Media error, trying to recover...');
                                     hls.recoverMediaError();
+                                    break;
+                                default:
+                                    hls.destroy();
                                     break;
                             }
                         }
@@ -904,11 +1191,10 @@
                         audio.removeEventListener('loadedmetadata', onLoaded);
                         loaded = true;
                         resolve();
-                    });
+                    }, { once: true });
                     audio.addEventListener('error', function onError(e) {
-                        audio.removeEventListener('error', onError);
-                        reject(new Error('Native HLS error'));
-                    });
+                        reject(new Error('Native HLS error: ' + (audio.error?.message || 'Unknown')));
+                    }, { once: true });
                     streamType.textContent = 'HLS (Native)';
                 } else {
                     clearTimeout(timeoutId);
@@ -922,11 +1208,9 @@
             retryCount = 0;
             const stream = streams[index];
 
-            // Update UI
             document.querySelectorAll('.stream-btn').forEach((btn, idx) => {
                 btn.classList.remove('active', 'error', 'checking');
                 if (idx === index) btn.classList.add('checking');
-                else if (streams[idx].protocol === 'http') btn.classList.add('http');
             });
 
             streamName.textContent = stream.name;
@@ -935,28 +1219,6 @@
             hideError();
             httpWarning.classList.remove('show');
 
-            // Stop current
-            audio.pause();
-
-            // Check for HTTP on HTTPS page
-            if (stream.protocol === 'http' && isPageHTTPS()) {
-                updateStreamBtnState(index, 'error');
-                streamStatus.textContent = '❌ بلۆککراوە';
-                streamStatus.className = 'value error';
-                httpWarning.classList.add('show');
-                showError(
-                    `<strong>⚠️ Mixed Content Blocked</strong><br><br>` +
-                    `ئەم پەڕەیە لە HTTPS کراوە، بەڵام ستریمەکە HTTPـیە.<br>` +
-                    `بڕاوسەرەکان (Chrome, Firefox, Edge) ڕێگا نادەن بە بارکردنی HTTP لەسەر HTTPS.<br><br>` +
-                    `<strong>چارەسەرەکان:</strong><br>` +
-                    `1. ✅ <strong>Stream 1 (HTTPS)</strong> بەکاربێنە<br>` +
-                    `2. 🖥️ پەڕەکە لە ڕێگەی <strong>localhost</strong> یان <strong>HTTP</strong> بکەرەوە<br>` +
-                    `3. 🔧 پەیوەندی بە بەڕێوەبەری ڕادیۆکە بکە بۆ HTTPS`,
-                    true
-                );
-                return;
-            }
-
             try {
                 await initHLS(stream.url, index);
 
@@ -964,34 +1226,38 @@
                 streamStatus.textContent = '✅ ئامادەیە';
                 streamStatus.className = 'value success';
 
+                initAudioContext();
+                if (audioCtx && audioCtx.state === 'suspended') {
+                    await audioCtx.resume();
+                }
+
                 try {
                     await audio.play();
                 } catch(e) {
                     streamStatus.textContent = '▶️ کرتە لە Play بکە';
+                    streamStatus.className = 'value warning';
                 }
             } catch (err) {
                 console.error('Stream failed:', err);
-
                 updateStreamBtnState(index, 'error');
                 streamStatus.textContent = '❌ هەڵە';
                 streamStatus.className = 'value error';
 
                 let errorMsg = `<strong>❌ Stream ${index + 1} کار ناکات</strong><br><br>`;
-
-                if (stream.needsAuth) {
-                    errorMsg += `ئەم ستریمە پێویستی بە دڵنیاکردنەوەی بەکارهێنەر هەیە.<br>`;
-                    errorMsg += `لە کۆدی کۆنەکەتدا: <code>admin:Radio Sunnat Slemany@...</code><br><br>`;
-                    errorMsg += `🛡️ <strong>بڕاوسەرە نوێیەکان credentials لە ناو URL ڕێگا نادەن</strong>.<br>`;
-                    errorMsg += `چارەسەر: Stream 1 بەکاربێنە.`;
-                } else if (err.message.includes('network') || err.message.includes('NETWORK')) {
-                    errorMsg += `کێشەی Network: CORS یان Mixed Content.<br>`;
+                if (err.message.includes('network') || err.message.includes('NETWORK') || err.message.includes('404') || err.message.includes('0')) {
+                    errorMsg += `کێشەی Network: CORS، Mixed Content، یان ستریمەکە لەسەر سێرڤەر نییە.<br>`;
                     errorMsg += `چارەسەر: Stream 1 بەکاربێنە.`;
                 } else {
                     errorMsg += `هۆکار: ${err.message}<br>`;
-                    errorMsg += `لینک: <code style="font-size:0.8em">${stream.url}</code>`;
                 }
+                errorMsg += `<br><small style="opacity:0.7">لینک: ${stream.url.substring(0, 60)}...</small>`;
 
                 showError(errorMsg, index !== 0);
+
+                // Auto-fallback to stream 0 if stream 1 fails
+                if (index !== 0) {
+                    setTimeout(() => switchStream(0), 2000);
+                }
             }
         }
 
@@ -1004,40 +1270,28 @@
             }
         }
 
-        // ===== Visualizer =====
-        function startVisualizer() {
-            if (visualizerInterval) clearInterval(visualizerInterval);
-            const bars = document.querySelectorAll('.visualizer-bar');
-            visualizerInterval = setInterval(() => {
-                bars.forEach(bar => {
-                    const height = Math.random() * 30 + 5;
-                    bar.style.height = height + 'px';
-                });
-            }, 100);
-        }
-
-        function stopVisualizer() {
-            if (visualizerInterval) clearInterval(visualizerInterval);
-            const bars = document.querySelectorAll('.visualizer-bar');
-            bars.forEach(bar => {
-                bar.style.height = '5px';
-            });
-        }
-
+        // ===== Audio Events =====
         audio.addEventListener('play', () => {
+            isPlaying = true;
+            playBtn.textContent = '⏸️';
             streamStatus.textContent = '🔴 لایڤ';
             streamStatus.className = 'value success';
-            startVisualizer();
+            startRealVisualizer();
         });
 
         audio.addEventListener('pause', () => {
+            isPlaying = false;
+            playBtn.textContent = '▶️';
             streamStatus.textContent = '⏸ وەستا';
             streamStatus.className = 'value';
             stopVisualizer();
         });
 
         audio.addEventListener('volumechange', () => {
-            document.getElementById('volDisplay').textContent = Math.round(audio.volume * 100) + '%';
+            const vol = audio.muted ? 0 : audio.volume;
+            document.getElementById('volDisplay').textContent = Math.round(vol * 100) + '%';
+            volumeSlider.value = Math.round(vol * 100);
+            updateVolumeIcon(vol);
         });
 
         audio.addEventListener('waiting', () => {
@@ -1050,11 +1304,28 @@
             streamStatus.className = 'value warning';
         });
 
+        audio.addEventListener('error', (e) => {
+            const err = audio.error;
+            let msg = 'هەڵەی نەناسراو';
+            if (err) {
+                switch(err.code) {
+                    case 1: msg = 'هێنانەوە ڕاگیرا (ABORTED)'; break;
+                    case 2: msg = 'هەڵەی Network'; break;
+                    case 3: msg = 'هەڵەی دیکۆد'; break;
+                    case 4: msg = 'فۆرمات پشتگیری ناکرێت'; break;
+                }
+            }
+            streamStatus.textContent = '❌ ' + msg;
+            streamStatus.className = 'value error';
+        });
+
         // ===== Weather =====
         async function fetchWeather(lat, lon, cityId) {
             try {
-                const res = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true`);
-                if (!res.ok) throw new Error('Network response was not ok');
+                const res = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true`, {
+                    cache: 'no-store'
+                });
+                if (!res.ok) throw new Error('HTTP ' + res.status);
                 const data = await res.json();
                 const w = data.current_weather;
                 cityData[cityId] = {
@@ -1071,9 +1342,9 @@
             cities.forEach(c => fetchWeather(c.lat, c.lon, c.id));
         }
 
-        function cycleCity() {
-            const city = cities[currentCityIndex];
-            const data = cityData[city.id] || {temp:'--',desc:'...',icon:'☀️'};
+        function showCity(index) {
+            const city = cities[index];
+            const data = cityData[city.id] || {temp:'--',desc:'بارکردن...',icon:'<span class="weather-loading"></span>'};
             const cityEl = document.getElementById('singleCity');
             const iconEl = document.getElementById('singleIcon');
             const tempEl = document.getElementById('singleTemp');
@@ -1083,54 +1354,62 @@
             iconEl.style.opacity = '0';
             tempEl.style.opacity = '0';
             descEl.style.opacity = '0';
-            cityEl.style.transform = 'translateX(20px)';
 
             setTimeout(() => {
                 cityEl.textContent = city.name;
-                iconEl.textContent = data.icon;
+                iconEl.innerHTML = data.icon;
                 tempEl.textContent = data.temp + '°';
                 descEl.textContent = data.desc;
                 document.querySelectorAll('.city-dot').forEach((dot,idx) => {
-                    dot.classList.toggle('active', idx === currentCityIndex);
+                    dot.classList.toggle('active', idx === index);
                 });
                 cityEl.style.opacity = '1';
                 iconEl.style.opacity = '1';
                 tempEl.style.opacity = '1';
                 descEl.style.opacity = '1';
-                cityEl.style.transform = 'translateX(0)';
             }, 300);
-
-            currentCityIndex = (currentCityIndex + 1) % cities.length;
         }
 
-        // ===== Date & Time =====
-        function toHijri(gregDate) {
-            const d = gregDate.getDate();
-            const m = gregDate.getMonth() + 1;
-            const y = gregDate.getFullYear();
+        function cycleCity() {
+            currentCityIndex = (currentCityIndex + 1) % cities.length;
+            showCity(currentCityIndex);
+        }
 
-            const jd = Math.floor((1461 * (y + 4800 + Math.floor((m - 14) / 12))) / 4) +
-                      Math.floor((367 * (m - 2 - 12 * Math.floor((m - 14) / 12))) / 12) -
-                      Math.floor((3 * Math.floor((y + 4900 + Math.floor((m - 14) / 12)) / 100)) / 4) +
-                      d - 32075;
+        // ===== Accurate Hijri Calculation =====
+        function toHijri(gregDate) {
+            // Umm al-Qura approximation (valid 1900-2100)
+            const y = gregDate.getFullYear();
+            const m = gregDate.getMonth() + 1;
+            const d = gregDate.getDate();
+
+            let jd;
+            if (y < 1583) {
+                jd = Math.floor((1461 * (y + 4800 + Math.floor((m - 14) / 12))) / 4) +
+                     Math.floor((367 * (m - 2 - 12 * Math.floor((m - 14) / 12))) / 12) -
+                     Math.floor((3 * Math.floor((y + 4900 + Math.floor((m - 14) / 12)) / 100)) / 4) + d - 32075;
+            } else {
+                jd = Math.floor((1461 * (y + 4800 + Math.floor((m - 14) / 12))) / 4) +
+                     Math.floor((367 * (m - 2 - 12 * Math.floor((m - 14) / 12))) / 12) -
+                     Math.floor((3 * Math.floor((y + 4900 + Math.floor((m - 14) / 12)) / 100)) / 4) + d - 32075;
+            }
 
             const l = jd - 1948440 + 10632;
             const n = Math.floor((l - 1) / 10631);
             let j = l - 10631 * n + 354;
-            const jy = Math.floor((10985 - j) / 5316) * Math.floor((50 * j) / 17719) + 
+            const jy = Math.floor((10985 - j) / 5316) * Math.floor((50 * j) / 17719) +
                        Math.floor(j / 5670) * Math.floor((43 * j) / 15238);
-            j = j - Math.floor((30 - jy) / 15) * Math.floor((17719 * jy) / 50) - 
+            j = j - Math.floor((30 - jy) / 15) * Math.floor((17719 * jy) / 50) -
                 Math.floor(jy / 16) * Math.floor((15238 * jy) / 43) + 29;
             const jm = Math.floor((24 * j) / 709);
             const jd2 = j - Math.floor((709 * jm) / 24);
+            const year = Math.floor(30 * n + jy - 30);
+            const month = Math.min(Math.max(jm - 1, 0), 11);
+            const day = Math.floor(jd2);
 
-            return {
-                day: Math.floor(jd2),
-                month: hijriMonths[Math.min(Math.max(jm - 1, 0), 11)],
-                year: Math.floor(30 * n + jy - 30)
-            };
+            return { day, month: hijriMonths[month], year };
         }
 
+        // ===== Date & Time =====
         function updateDateTime() {
             const now = new Date();
             const h = String(now.getHours()).padStart(2,'0');
@@ -1150,17 +1429,10 @@
 
             const hijri = toHijri(now);
             currentDateValues.hijri = `<span class="highlight">${hijri.day}</span> ${hijri.month} ${hijri.year}`;
-
-            const visibleIndex = currentDateIndex === 0 ? 0 : currentDateIndex - 1;
-            const fmt = dateFormats[visibleIndex];
-            const valueEl = document.getElementById('dateValue');
-            if (valueEl.innerHTML === '...' || valueEl.innerHTML.includes('undefined')) {
-                valueEl.innerHTML = currentDateValues[fmt.key];
-            }
         }
 
-        function cycleDate() {
-            const fmt = dateFormats[currentDateIndex];
+        function showDate(index) {
+            const fmt = dateFormats[index];
             const iconEl = document.getElementById('dateIcon');
             const labelEl = document.getElementById('dateLabel');
             const valueEl = document.getElementById('dateValue');
@@ -1177,7 +1449,7 @@
                 valueEl.innerHTML = currentDateValues[fmt.key] || '...';
 
                 document.querySelectorAll('.date-dot').forEach((dot,idx) => {
-                    dot.classList.toggle('active', idx === currentDateIndex);
+                    dot.classList.toggle('active', idx === index);
                 });
 
                 iconEl.style.opacity = '1';
@@ -1186,22 +1458,79 @@
                 valueEl.style.opacity = '1';
                 valueEl.style.transform = 'translateY(0)';
             }, 300);
-
-            currentDateIndex = (currentDateIndex + 1) % dateFormats.length;
         }
+
+        function cycleDate() {
+            currentDateIndex = (currentDateIndex + 1) % dateFormats.length;
+            showDate(currentDateIndex);
+        }
+
+        // ===== Network Status =====
+        function updateNetworkStatus() {
+            if (!navigator.onLine) {
+                networkStatus.classList.add('show');
+            } else {
+                networkStatus.classList.remove('show');
+            }
+        }
+        window.addEventListener('online', updateNetworkStatus);
+        window.addEventListener('offline', updateNetworkStatus);
+
+        // ===== Keyboard Shortcuts =====
+        document.addEventListener('keydown', (e) => {
+            if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+
+            if (e.code === 'Space') {
+                e.preventDefault();
+                togglePlay();
+            } else if (e.code === 'ArrowUp') {
+                e.preventDefault();
+                setVolume(Math.min(100, parseInt(volumeSlider.value) + 5));
+            } else if (e.code === 'ArrowDown') {
+                e.preventDefault();
+                setVolume(Math.max(0, parseInt(volumeSlider.value) - 5));
+            } else if (e.key === '1') {
+                switchStream(0);
+            } else if (e.key === '2') {
+                switchStream(1);
+            }
+        });
+
+        // ===== Dot Click Handlers =====
+        document.querySelectorAll('.city-dot').forEach(dot => {
+            dot.addEventListener('click', () => {
+                currentCityIndex = parseInt(dot.dataset.index);
+                showCity(currentCityIndex);
+            });
+        });
+
+        document.querySelectorAll('.date-dot').forEach(dot => {
+            dot.addEventListener('click', () => {
+                currentDateIndex = parseInt(dot.dataset.index);
+                showDate(currentDateIndex);
+            });
+        });
 
         // ===== Initialization =====
         document.addEventListener('DOMContentLoaded', () => {
             updateDateTime();
             updateAllWeather();
-            switchStream(0); // Start with Stream 1 (HTTPS)
+            updateNetworkStatus();
+            switchStream(0);
 
+            // Initial display
+            showCity(0);
+            showDate(0);
+
+            // Intervals
             setInterval(updateDateTime, 1000);
-            setInterval(updateAllWeather, 300000);
-            setInterval(cycleCity, 5000);
-            setInterval(cycleDate, 5000);
-            setTimeout(cycleCity, 1000);
-            setTimeout(cycleDate, 1500);
+            setInterval(updateAllWeather, 300000); // 5 minutes
+            setInterval(cycleCity, 6000); // 6 seconds
+            setInterval(cycleDate, 6000); // 6 seconds
+
+            // Initial volume
+            audio.volume = 0.8;
+            setVolume(80);
         });
     </script>
 </body>
