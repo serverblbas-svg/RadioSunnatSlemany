@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Radio Spi Hawler - ڕادیۆی سپی هەولێر</title>
+    <title>Radio Sunnat Slemany -ڕادیۆی سوننه ت سلێمانى</title>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&family=Tajawal:wght@400;700;900&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
     <style>
@@ -687,7 +687,7 @@
     <div class="main-content">
         <div class="player-area">
             <div class="player-header">
-                <div class="player-title">📻 Radio Spi Hawler - ڕادیۆی سپی هەولێر</div>
+                <div class="player-title">📻 Radio Sunnat Slemany- ڕادیۆی سوننه سلێمانى</div>
                 <div class="badge">LIVE</div>
             </div>
 
@@ -734,7 +734,7 @@
             <div class="status-bar">
                 <div class="status-item"><span>📡</span><span>دۆخ: <span class="value" id="streamStatus">چاوەڕێ</span></span></div>
                 <div class="status-item"><span>🎵</span><span>بەرزی دەنگ: <span class="value" id="volDisplay">80%</span></span></div>
-                <div class="status-item"><span>📊</span><span>لایڤ: <span class="value" id="streamName">RADIO SPI HAWLER</span></span></div>
+                <div class="status-item"><span>📊</span><span>لایڤ: <span class="value" id="streamName">RADIO Sunnat Slemany</span></span></div>
                 <div class="status-item"><span>🔗</span><span>جۆری ستریم: <span class="value" id="streamType">HLS</span></span></div>
             </div>
         </div>
@@ -750,11 +750,11 @@
                 protocol: 'https'
             },
             {
-                name: 'Listen2Radio',
-                // Original: http://admin:radiospihawler@uk17freenew.listen2myradio.com:23549/live/radiospihawler2025/m3u8
+                name: 'giatv/giatv-rsunnat',
+                // Original: https://live20.bozztv.com/giatv/giatv-rsunnat/rsunnat/chunks.m3u8
                 // Browsers block credentials in URL since 2021
                 // Also block HTTP on HTTPS pages (mixed content)
-                url: 'http://uk17freenew.listen2myradio.com:23549/live/radiospihawler2025/m3u8',
+                url: 'https://live20.bozztv.com/giatv/giatv-rsunnat/rsunnat/chunks.m3u8',
                 type: 'hls',
                 protocol: 'http',
                 needsAuth: true
@@ -980,7 +980,7 @@
 
                 if (stream.needsAuth) {
                     errorMsg += `ئەم ستریمە پێویستی بە دڵنیاکردنەوەی بەکارهێنەر هەیە.<br>`;
-                    errorMsg += `لە کۆدی کۆنەکەتدا: <code>admin:radiospihawler@...</code><br><br>`;
+                    errorMsg += `لە کۆدی کۆنەکەتدا: <code>admin:Radio Sunnat Slemany@...</code><br><br>`;
                     errorMsg += `🛡️ <strong>بڕاوسەرە نوێیەکان credentials لە ناو URL ڕێگا نادەن</strong>.<br>`;
                     errorMsg += `چارەسەر: Stream 1 بەکاربێنە.`;
                 } else if (err.message.includes('network') || err.message.includes('NETWORK')) {
